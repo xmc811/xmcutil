@@ -8,15 +8,18 @@ Authors@R: c(
 Maintainer: Mingchu Xu <mxu.china@gmail.com>
 Depends: 
         R (>= 3.6)
-Description: The package contains simple bioinformatics utilities for Daily use. It will be continuously updated.
+Description: The package contains simple bioinformatics utilities for daily use. It will be continuously updated.
 License: GPL-3 | file LICENSE
 LazyData: TRUE
 biocViews:
 Imports:
         CNTools,
         DNAcopy,
+        dplyr,
         magrittr,
         reshape2,
+        rlang,
+        stringr,
         tidyverse
 Collate:
         "cnv.R"

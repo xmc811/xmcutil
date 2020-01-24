@@ -12,7 +12,7 @@ test_cnv(values, cutoff = c(-0.3, 0.3))
 \item{cutoff}{A numeric vector of length 2 - the cutoff for calling amplifications or deletions}
 }
 \value{
-A numeric vector of the same length with \code{values}.
+A numeric vector of the same length with \code{values}
 }
 \description{
 Look up corresponding values from a lookup table
