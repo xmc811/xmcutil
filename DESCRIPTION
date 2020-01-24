@@ -1,0 +1,25 @@
+Package: xmcutil
+Type: Package
+Title: Simple bioinformatics utilities
+Version: 0.1.0
+Authors@R: c(
+        person("Mingchu", "Xu", email = "mxu.china@gmail.com", role = c("aut", "cre"))
+        )
+Maintainer: Mingchu Xu <mxu.china@gmail.com>
+Depends: 
+        R (>= 3.6)
+Description: 
+License: GPL-3 | file LICENSE
+LazyData: TRUE
+biocViews:
+Imports:
+        CNTools,
+        DNACopy,
+        magrittr,
+        reshape2,
+        tidyverse
+Collate:
+        "cnv.R"
+Suggests:
+RoxygenNote: 7.0.2
+Encoding: UTF-8
