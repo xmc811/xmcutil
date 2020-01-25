@@ -97,11 +97,11 @@ segment_to_cnv <- function(df,
 
     cnseg <- CNTools::CNSeg(df)
 
-    utils::data("geneInfo")
+    utils::data("geneInfo", package = "CNTools")
     geneInfo <- geneInfo %>%
         filter(.data$genename %in% gene_list)
 
-    rdByGene <- CNTools ::getRS(cnseg,
+    rdByGene <- CNTools::getRS(cnseg,
                                 by = "gene",
                                 imput = FALSE,
                                 XY = FALSE,
