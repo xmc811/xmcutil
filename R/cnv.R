@@ -1,16 +1,18 @@
 
 # Tools for processing CNV data
 
-#' Look up corresponding values from a lookup table
+#' Determine if the segment mean indicates an amplification or a deletion
 #'
 #' @param values A numeric vector - the log2Ratio values for copy number changes.
 #' @param cutoff A numeric vector of length 2 - the cutoff for calling amplifications or deletions
+#' @param return_text A logical value - if the return value shows text. Default value is \code{FALSE}.
 #'
 #' @return A numeric vector of the same length with \code{values}
 #' @export
 
 test_cnv <- function(values,
-                     cutoff = c(-0.3, 0.3)) {
+                     cutoff = c(-0.3, 0.3),
+                     return_text = FALSE) {
 
     if (cutoff[2] <= cutoff[1]) {
         stop("Cutoff values not accepted")
@@ -21,6 +23,12 @@ test_cnv <- function(values,
 
     test <- test_1 + test_2 - 1
 
+    if (return_text) {
+
+        plyr::mapvalues(x = test,
+                        from = c(1, 0, -1),
+                        to = c("Amplification", NA, "Deletion"))
+    }
     return(test)
 }
 

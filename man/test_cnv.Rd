@@ -2,18 +2,20 @@
 % Please edit documentation in R/cnv.R
 \name{test_cnv}
 \alias{test_cnv}
-\title{Look up corresponding values from a lookup table}
+\title{Determine if the segment mean indicates an amplification or a deletion}
 \usage{
-test_cnv(values, cutoff = c(-0.3, 0.3))
+test_cnv(values, cutoff = c(-0.3, 0.3), return_text = FALSE)
 }
 \arguments{
 \item{values}{A numeric vector - the log2Ratio values for copy number changes.}
 
 \item{cutoff}{A numeric vector of length 2 - the cutoff for calling amplifications or deletions}
+
+\item{return_text}{A logical value - if the return value shows text. Default value is \code{FALSE}.}
 }
 \value{
 A numeric vector of the same length with \code{values}
 }
 \description{
-Look up corresponding values from a lookup table
+Determine if the segment mean indicates an amplification or a deletion
 }

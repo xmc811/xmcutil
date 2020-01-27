@@ -17,6 +17,7 @@ Imports:
         DNAcopy,
         dplyr,
         magrittr,
+        plyr,
         reshape2,
         rlang,
         stringr,
