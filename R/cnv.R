@@ -142,7 +142,7 @@ segment_to_cnv <- function(df,
         cnv_res <- reshape2::dcast(data = cnv_res,
                                    formula = Gene ~ Sample,
                                    value.var = "CNV")
-        test <- tibble::column_to_rownames(test, var = "Gene")
+        cnv_res <- tibble::column_to_rownames(cnv_res, var = "Gene")
     }
 
     rm(geneInfo, envir = .GlobalEnv)
