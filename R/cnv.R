@@ -90,6 +90,7 @@ log2ratio_to_segment <- function(file, sample_name = NULL, pattern = NULL) {
 #' @param df A dataframe - segmentation data
 #' @param gene_list A string vector - list of human gene symbols.
 #' @param return_num A logical - whether numeric value is returned or not. Default is \code{FALSE}.
+#' @param return_text A logical value - if the return value shows text. Default value is \code{FALSE}.
 #' @param cutoff A numeric vector of length 2
 #'
 #' @return A dataframe of CNV status
@@ -101,6 +102,7 @@ log2ratio_to_segment <- function(file, sample_name = NULL, pattern = NULL) {
 segment_to_cnv <- function(df,
                            gene_list,
                            return_num = FALSE,
+                           return_text = FALSE,
                            cutoff = c(-0.3, 0.3)) {
 
     cnseg <- CNTools::CNSeg(df)
@@ -128,7 +130,9 @@ segment_to_cnv <- function(df,
 
     if (return_num == FALSE) {
         cnv_res %<>%
-            mutate(CNV = test_cnv(.data$CNV, cutoff = cutoff))
+            mutate(CNV = test_cnv(.data$CNV,
+                                  return_text = return_text,
+                                  cutoff = cutoff))
     }
 
     rm(geneInfo, envir = .GlobalEnv)
