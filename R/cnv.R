@@ -25,7 +25,7 @@ test_cnv <- function(values,
 
     if (return_text) {
 
-        plyr::mapvalues(x = test,
+        test <- plyr::mapvalues(x = test,
                         from = c(1, 0, -1),
                         to = c("Amplification", NA, "Deletion"))
     }
