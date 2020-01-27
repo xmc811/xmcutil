@@ -21,9 +21,11 @@ Imports:
         reshape2,
         rlang,
         stringr,
+        tibble,
         tidyverse
 Collate:
         "cnv.R"
+        "mutation.R"
 Suggests:
 RoxygenNote: 7.0.2
 Encoding: UTF-8
