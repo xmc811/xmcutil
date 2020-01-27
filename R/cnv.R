@@ -91,6 +91,7 @@ log2ratio_to_segment <- function(file, sample_name = NULL, pattern = NULL) {
 #' @param gene_list A string vector - list of human gene symbols.
 #' @param return_num A logical - whether numeric value is returned or not. Default is \code{FALSE}.
 #' @param return_text A logical value - if the return value shows text. Default value is \code{FALSE}.
+#' @param reshape A logical value - if the result table is casted to matrix format. Default value is \code{FALSE}.
 #' @param cutoff A numeric vector of length 2
 #'
 #' @return A dataframe of CNV status
@@ -103,6 +104,7 @@ segment_to_cnv <- function(df,
                            gene_list,
                            return_num = FALSE,
                            return_text = FALSE,
+                           reshape = FALSE,
                            cutoff = c(-0.3, 0.3)) {
 
     cnseg <- CNTools::CNSeg(df)
@@ -133,6 +135,14 @@ segment_to_cnv <- function(df,
             mutate(CNV = test_cnv(.data$CNV,
                                   return_text = return_text,
                                   cutoff = cutoff))
+    }
+
+    if (reshape) {
+
+        cnv_res <- reshape2::dcast(data = cnv_res,
+                                   formula = Gene ~ Sample,
+                                   value.var = "CNV")
+        test <- tibble::column_to_rownames(test, var = "Gene")
     }
 
     rm(geneInfo, envir = .GlobalEnv)

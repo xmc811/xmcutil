@@ -9,6 +9,7 @@ segment_to_cnv(
   gene_list,
   return_num = FALSE,
   return_text = FALSE,
+  reshape = FALSE,
   cutoff = c(-0.3, 0.3)
 )
 }
@@ -20,6 +21,8 @@ segment_to_cnv(
 \item{return_num}{A logical - whether numeric value is returned or not. Default is \code{FALSE}.}
 
 \item{return_text}{A logical value - if the return value shows text. Default value is \code{FALSE}.}
+
+\item{reshape}{A logical value - if the result table is casted to matrix format. Default value is \code{FALSE}.}
 
 \item{cutoff}{A numeric vector of length 2}
 }
