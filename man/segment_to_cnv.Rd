@@ -4,27 +4,16 @@
 \alias{segment_to_cnv}
 \title{Get CNV status from segmentation data}
 \usage{
-segment_to_cnv(
-  df,
-  gene_list,
-  return_num = FALSE,
-  return_text = FALSE,
-  reshape = FALSE,
-  cutoff = c(-0.3, 0.3)
-)
+segment_to_cnv(df, gene_list, as_matrix = FALSE, ...)
 }
 \arguments{
 \item{df}{A dataframe - segmentation data}
 
 \item{gene_list}{A string vector - list of human gene symbols.}
 
-\item{return_num}{A logical - whether numeric value is returned or not. Default is \code{FALSE}.}
+\item{as_matrix}{A logical value - if the result table is casted to matrix format. Default value is \code{FALSE}.}
 
-\item{return_text}{A logical value - if the return value shows text. Default value is \code{FALSE}.}
-
-\item{reshape}{A logical value - if the result table is casted to matrix format. Default value is \code{FALSE}.}
-
-\item{cutoff}{A numeric vector of length 2}
+\item{...}{Additional parameters passed to \code{test_cnv()}}
 }
 \value{
 A dataframe of CNV status

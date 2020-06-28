@@ -1,6 +1,6 @@
 Package: xmcutil
 Type: Package
-Title: Simple bioinformatics utilities
+Title: Bioinformatics data processing utilities 
 Version: 0.1.0
 Authors@R: c(
         person("Mingchu", "Xu", email = "mxu.china@gmail.com", role = c("aut", "cre"))
@@ -27,5 +27,5 @@ Collate:
         "cnv.R"
         "mutation.R"
 Suggests:
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 Encoding: UTF-8

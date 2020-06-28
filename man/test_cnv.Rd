@@ -4,14 +4,16 @@
 \alias{test_cnv}
 \title{Determine if the segment mean indicates an amplification or a deletion}
 \usage{
-test_cnv(values, cutoff = c(-0.3, 0.3), return_text = FALSE)
+test_cnv(values, cutoff = c(-0.3, 0.3), return_val = "logic")
 }
 \arguments{
 \item{values}{A numeric vector - the log2Ratio values for copy number changes.}
 
 \item{cutoff}{A numeric vector of length 2 - the cutoff for calling amplifications or deletions}
 
-\item{return_text}{A logical value - if the return value shows text. Default value is \code{FALSE}.}
+\item{return_val}{A string - if \code{"logic"}, return \code{c(-1,0,1)}-based logical\cr
+value; if \code{"num"}, return original numeric value; if anything else, \cr
+return \code{c("Deletion",NA,"Amplification")}-based string. Default value is \code{"logic"}.}
 }
 \value{
 A numeric vector of the same length with \code{values}

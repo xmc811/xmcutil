@@ -5,31 +5,39 @@
 #'
 #' @param values A numeric vector - the log2Ratio values for copy number changes.
 #' @param cutoff A numeric vector of length 2 - the cutoff for calling amplifications or deletions
-#' @param return_text A logical value - if the return value shows text. Default value is \code{FALSE}.
+#' @param return_val A string - if \code{"logic"}, return \code{c(-1,0,1)}-based logical\cr
+#' value; if \code{"num"}, return original numeric value; if anything else, \cr
+#' return \code{c("Deletion",NA,"Amplification")}-based string. Default value is \code{"logic"}.
 #'
 #' @return A numeric vector of the same length with \code{values}
 #' @export
 
 test_cnv <- function(values,
                      cutoff = c(-0.3, 0.3),
-                     return_text = FALSE) {
+                     return_val = "logic") {
 
     if (cutoff[2] <= cutoff[1]) {
         stop("Cutoff values not accepted")
     }
 
-    test_1 <- (values > cutoff[2])
-    test_2 <- (values >= cutoff[1])
+    if (return_val == "num") {
+        return(values)
+    } else {
 
-    test <- test_1 + test_2 - 1
+        test_1 <- (values > cutoff[2])
+        test_2 <- (values >= cutoff[1])
 
-    if (return_text) {
+        test <- test_1 + test_2 - 1
 
-        test <- plyr::mapvalues(x = test,
-                        from = c(1, 0, -1),
-                        to = c("Amplification", NA, "Deletion"))
+        if (return_val == "logic") {
+            return(test)
+        } else {
+            test <- plyr::mapvalues(x = test,
+                                    from = c(1, 0, -1),
+                                    to = c("Amplification", NA, "Deletion"))
+            return(test)
+        }
     }
-    return(test)
 }
 
 
@@ -89,10 +97,8 @@ log2ratio_to_segment <- function(file, sample_name = NULL, pattern = NULL) {
 #'
 #' @param df A dataframe - segmentation data
 #' @param gene_list A string vector - list of human gene symbols.
-#' @param return_num A logical - whether numeric value is returned or not. Default is \code{FALSE}.
-#' @param return_text A logical value - if the return value shows text. Default value is \code{FALSE}.
-#' @param reshape A logical value - if the result table is casted to matrix format. Default value is \code{FALSE}.
-#' @param cutoff A numeric vector of length 2
+#' @param as_matrix A logical value - if the result table is casted to matrix format. Default value is \code{FALSE}.
+#' @param ... Additional parameters passed to \code{test_cnv()}
 #'
 #' @return A dataframe of CNV status
 #' @importFrom dplyr filter mutate
@@ -102,23 +108,28 @@ log2ratio_to_segment <- function(file, sample_name = NULL, pattern = NULL) {
 
 segment_to_cnv <- function(df,
                            gene_list,
-                           return_num = FALSE,
-                           return_text = FALSE,
-                           reshape = FALSE,
-                           cutoff = c(-0.3, 0.3)) {
+                           as_matrix = FALSE,
+                           ...) {
+
+    df <- as.data.frame(df)
 
     cnseg <- CNTools::CNSeg(df)
 
     utils::data("geneInfo", package = "CNTools")
-    geneInfo <- geneInfo %>%
-        filter(.data$genename %in% gene_list)
+
+    if (is.null(gene_list)) {
+
+    } else {
+        geneInfo <- geneInfo %>%
+            filter(.data$genename %in% gene_list)
+    }
 
     rdByGene <- CNTools::getRS(cnseg,
-                                by = "gene",
-                                imput = FALSE,
-                                XY = FALSE,
-                                geneMap = geneInfo,
-                                what = "median")
+                               by = "gene",
+                               imput = FALSE,
+                               XY = FALSE,
+                               geneMap = geneInfo,
+                               what = "median")
 
     cnv_res <- rdByGene@rs %>%
         `[`(6:ncol(rdByGene@rs)) %>%
@@ -126,25 +137,18 @@ segment_to_cnv <- function(df,
 
     colnames(cnv_res) <- rdByGene@rs$genename
 
-    cnv_res <- reshape2::melt(cnv_res)
+    if (as_matrix) {
 
-    colnames(cnv_res) <- c("Sample", "Gene", "CNV")
-
-    if (return_num == FALSE) {
         cnv_res %<>%
-            mutate(CNV = test_cnv(.data$CNV,
-                                  return_text = return_text,
-                                  cutoff = cutoff))
+            test_cnv(...) %>%
+            t()
+
+    } else {
+        cnv_res <- reshape2::melt(cnv_res)
+        colnames(cnv_res) <- c("Sample", "Gene", "CNV")
+        cnv_res %<>%
+            mutate(CNV = test_cnv(.data$CNV, ...))
     }
-
-    if (reshape) {
-
-        cnv_res <- reshape2::dcast(data = cnv_res,
-                                   formula = Gene ~ Sample,
-                                   value.var = "CNV")
-        cnv_res <- tibble::column_to_rownames(cnv_res, var = "Gene")
-    }
-
     rm(geneInfo, envir = .GlobalEnv)
     return(cnv_res)
 }
