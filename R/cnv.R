@@ -115,8 +115,6 @@ segment_to_cnv <- function(df,
 
     cnseg <- CNTools::CNSeg(df)
 
-    utils::data("geneInfo", package = "CNTools")
-
     if (is.null(gene_list)) {
 
     } else {
@@ -149,7 +147,7 @@ segment_to_cnv <- function(df,
         cnv_res %<>%
             mutate(CNV = test_cnv(.data$CNV, ...))
     }
-    rm(geneInfo, envir = .GlobalEnv)
+
     return(cnv_res)
 }
 
