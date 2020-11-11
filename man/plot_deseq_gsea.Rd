@@ -9,7 +9,7 @@ plot_deseq_gsea(gsea, pattern = "HALLMARK_")
 \arguments{
 \item{gsea}{A tibble of GSEA results}
 
-\item{pattern}{A string - the pattern to remove in the plot. Default value is \code{"HALLMARK_"}}
+\item{pattern}{A string - the pattern to remove in the plot. Default value is \code{"HALLMARK_"}.}
 }
 \value{
 A ggplot2 plot

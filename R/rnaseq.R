@@ -179,7 +179,7 @@ res_to_gsea <- function(res, pathways) {
 #' Barplot from GSEA results
 #'
 #' @param gsea A tibble of GSEA results
-#' @param pattern A string - the pattern to remove in the plot. Default value is \code{"HALLMARK_"}
+#' @param pattern A string - the pattern to remove in the plot. Default value is \code{"HALLMARK_"}.
 #'
 #' @return A ggplot2 plot
 #' @importFrom stringr str_remove
@@ -191,7 +191,7 @@ res_to_gsea <- function(res, pathways) {
 plot_deseq_gsea <- function(gsea, pattern = "HALLMARK_") {
 
     gsea %>%
-        mutate(pathway = str_remove(string = .data$pathway, pattern = pattern)) %>%
+        gsea_rm_pattern() %>%
         mutate(color = -log10(.data$padj) * ifelse(.data$padj <= 1, 1, 0) * ifelse(.data$NES > 0, 1, -1)) %>%
         ggplot() +
         geom_bar(aes(x = reorder(.data$pathway, .data$NES),
@@ -215,18 +215,20 @@ plot_deseq_gsea <- function(gsea, pattern = "HALLMARK_") {
 #'
 #' @param gsea_list A list of tibble of GSEA results
 #' @param p_co A double - the cutoff of adjusted p-value
+#' @param pattern A string - the pattern to remove in the plot. Default value is \code{"HALLMARK_"}.
 #'
 #' @return A ggplot2 plot
 #' @importFrom ggplot2 scale_color_gradient2
 #' @export
 
 
-plot_deseq_gsea_list <- function(gsea_list, p_co) {
+plot_deseq_gsea_list <- function(gsea_list, p_co, pattern = "HALLMARK_") {
 
     gsea_list_new <- list()
 
     for (i in 1:length(gsea_list)) {
         gsea_list_new[[i]] <- gsea_list[[i]] %>%
+            gsea_rm_pattern(pattern = pattern) %>%
             add_column(Comparison = as.character(names(gsea_list)[i]))
     }
 
@@ -256,5 +258,21 @@ plot_deseq_gsea_list <- function(gsea_list, p_co) {
               axis.text.x = element_text(angle = 45, vjust = 0.5))
 }
 
+#' Remove repeated string pattern from the pathway names of GSEA results
+#'
+#' @param gsea A tibble of GSEA results
+#' @param pattern A string - the pattern to remove in the plot. Default value is \code{"HALLMARK_"}
+#'
+#' @return A tibble of GSEA results
+#' @importFrom stringr str_remove
+#' @export
+
+gsea_rm_pattern <- function(gsea, pattern = "HALLMARK_") {
+
+    gsea_new <- gsea %>%
+        mutate(pathway = str_remove(string = .data$pathway, pattern = pattern))
+
+    return(gsea_new)
+}
 
 

@@ -2,6 +2,7 @@
 
 export(cts_to_vsd)
 export(filter_mut_table)
+export(gsea_rm_pattern)
 export(log2ratio_to_segment)
 export(mut_add_column)
 export(plot_deseq_gsea)
