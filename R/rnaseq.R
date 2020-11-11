@@ -156,3 +156,105 @@ plot_deseq_volcano <- function(res, p_co, lfc_co,
 
 }
 
+
+#' GSEA from DESeq2Results object
+#'
+#' @param res A DESeq2Results object
+#' @param pathways A list - the list of pathway genes
+#'
+#' @return A tibble
+#' @export
+
+res_to_gsea <- function(res, pathways) {
+
+    stat <- res$stat
+    names(stat) <- rownames(res)
+
+    gsea <- fgsea::fgsea(pathways, stat, eps = 0) %>% as_tibble()
+
+    return(gsea)
+}
+
+
+#' Barplot from GSEA results
+#'
+#' @param gsea A tibble of GSEA results
+#' @param pattern A string - the pattern to remove in the plot. Default value is \code{"HALLMARK_"}
+#'
+#' @return A ggplot2 plot
+#' @importFrom stringr str_remove
+#' @importFrom stats reorder
+#' @importFrom ggplot2 geom_bar scale_fill_gradient2 coord_flip
+#' @export
+
+
+plot_deseq_gsea <- function(gsea, pattern = "HALLMARK_") {
+
+    gsea %>%
+        mutate(pathway = str_remove(string = .data$pathway, pattern = pattern)) %>%
+        mutate(color = -log10(.data$padj) * ifelse(.data$padj <= 1, 1, 0) * ifelse(.data$NES > 0, 1, -1)) %>%
+        ggplot() +
+        geom_bar(aes(x = reorder(.data$pathway, .data$NES),
+                     y = .data$NES, fill = .data$color), stat = "identity") +
+        scale_fill_gradient2(high = "#d53e4f",
+                             mid = "#f0f0f0",
+                             low = "#3288bd",
+                             midpoint = 0) +
+        coord_flip() +
+        labs(x = "Pathway",
+             y = "Normalized Enrichment Score (NES)",
+             fill = expression(-Log[10]~Adjusted~P-value)) +
+        theme_bw() +
+        theme(legend.position = "bottom",
+              axis.text = element_text(size = 10),
+              axis.title = element_text(size = 12))
+}
+
+
+#' Dotplot from a list of GSEA results
+#'
+#' @param gsea_list A list of tibble of GSEA results
+#' @param p_co A double - the cutoff of adjusted p-value
+#'
+#' @return A ggplot2 plot
+#' @importFrom ggplot2 scale_color_gradient2
+#' @export
+
+
+plot_deseq_gsea_list <- function(gsea_list, p_co) {
+
+    gsea_list_new <- list()
+
+    for (i in 1:length(gsea_list)) {
+        gsea_list_new[[i]] <- gsea_list[[i]] %>%
+            add_column(Comparison = as.character(names(gsea_list)[i]))
+    }
+
+    gsea_df <- do.call("rbind", gsea_list_new)
+
+    gsea_df %>%
+        mutate(color = -log10(.data$padj) * ifelse(.data$padj <= p_co, 1, 0) * ifelse(.data$NES > 0, 1, -1)) %>%
+        filter(.data$color != 0) %>%
+        ggplot() +
+        geom_point(aes(x = .data$pathway,
+                       y = factor(.data$Comparison),
+                       size = abs(.data$NES),
+                       color = .data$color)) +
+        scale_color_gradient2(high = "#d7301f",
+                              mid = "#f0f0f0",
+                              low = "#0570b0",
+                              midpoint = 0) +
+        labs(color = bquote("-log"[10] ~ p-value %*% direction),
+             size = "abs(Normalized enrichment score)",
+             x = "Pathway",
+             y = "Comparison") +
+        coord_flip() +
+        theme_bw() +
+        theme(legend.position = "bottom",
+              axis.text = element_text(size = 10),
+              axis.title = element_text(size = 12),
+              axis.text.x = element_text(angle = 45, vjust = 0.5))
+}
+
+
+

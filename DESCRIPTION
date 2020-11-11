@@ -17,6 +17,7 @@ Imports:
         DESeq2,
         DNAcopy,
         dplyr,
+        fgsea,
         ggplot2,
         magrittr,
         plyr,
