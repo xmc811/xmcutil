@@ -14,10 +14,13 @@ LazyData: TRUE
 biocViews:
 Imports:
         CNTools,
+        DESeq2,
         DNAcopy,
         dplyr,
+        ggplot2,
         magrittr,
         plyr,
+        purrr,
         reshape2,
         rlang,
         stringr,
@@ -25,8 +28,10 @@ Imports:
         tidyverse
 Collate:
         "data.R"
+        "globals.R"
         "cnv.R"
         "mutation.R"
+        "rnaseq.R"
 Suggests:
 RoxygenNote: 7.1.1
 Encoding: UTF-8

@@ -3,6 +3,8 @@
 export(filter_mut_table)
 export(log2ratio_to_segment)
 export(mut_add_column)
+export(plot_pca_df)
+export(plot_rna_pca)
 export(segment_to_cnv)
 export(test_cnv)
 importFrom(dplyr,filter)

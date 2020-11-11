@@ -89,7 +89,6 @@ log2ratio_to_segment <- function(file, sample_name = NULL, pattern = NULL) {
     }
 
     return(as.data.frame(do.call("rbind", data_list)))
-
 }
 
 
@@ -118,7 +117,7 @@ segment_to_cnv <- function(df,
     if (is.null(gene_list)) {
 
     } else {
-        geneInfo <- geneInfo %>%
+        gene_info <- geneInfo %>%
             filter(.data$genename %in% gene_list)
     }
 
@@ -126,7 +125,7 @@ segment_to_cnv <- function(df,
                                by = "gene",
                                imput = FALSE,
                                XY = FALSE,
-                               geneMap = geneInfo,
+                               geneMap = gene_info,
                                what = "median")
 
     cnv_res <- rdByGene@rs %>%
