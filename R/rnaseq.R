@@ -1,33 +1,37 @@
 
-#' PCA plot from PCA coordinates
+#' PCA plot from vsd object
 #'
-#' @param df A dataframe - the PCA coordinates of RNA-seq samples
+#' @param vsd A vsd object
 #' @param var A string - the name of the variable matching metadata columns
+#' @param pal A string - palette name of \code{RColorBrewer}
 #'
 #' @return A ggplot2 plot
+#' @importFrom ggplot2 ggplot geom_point aes scale_color_brewer labs theme_bw theme
 #' @export
 
-plot_pca_df <- function(df, var) {
+plot_pca_vsd <- function(vsd, var, pal) {
 
-    ggplot2::ggplot(df) +
-        ggplot2::geom_point(ggplot2::aes(x = .data$PC1,
-                                         y = .data$PC2,
-                                         color = .data$group), size = 2) +
-        ggplot2::labs(color = var) +
-        ggplot2::theme_bw() +
-        ggplot2::theme(aspect.ratio = 1)
+    pca <- DESeq2::plotPCA(vsd, intgroup = var, returnData = TRUE)
+
+    ggplot(pca) +
+        geom_point(aes(x = .data$PC1,
+                       y = .data$PC2,
+                       color = .data$group), size = 2) +
+        scale_color_brewer(palette = pal) +
+        labs(color = var) +
+        theme_bw() +
+        theme(aspect.ratio = 1)
 }
 
-#' PCA plot from PCA coordinates
+#' Generate vsd object from counts and metadata
 #'
 #' @param counts A matrix - the RNA-seq count matrix
 #' @param metadata A metadata - the metadata matrix
-#' @param vars A string vector - the vector of varibles to plot
 #'
-#' @return A list ggplot2 plots
+#' @return A vsd object
 #' @export
 
-plot_rna_pca <- function(counts, metadata, vars) {
+cts_to_vsd <- function(counts, metadata) {
 
     dds <- DESeq2::DESeqDataSetFromMatrix(countData = counts,
                                           colData = metadata,
@@ -35,12 +39,6 @@ plot_rna_pca <- function(counts, metadata, vars) {
     dds <- DESeq2::DESeq(dds)
     vsd <- DESeq2::vst(dds, blind = FALSE)
 
-    df_list <- purrr::map(.x = vars, .f = DESeq2::plotPCA, object = vsd, returnData = TRUE)
-
-    plot_list <- purrr::map2(.x = df_list, .y = vars, .f = plot_pca_df)
-    names(plot_list) <- vars
-
-    return(plot_list)
-
+    return(vsd)
 }
 
