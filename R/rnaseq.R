@@ -56,7 +56,7 @@ plot_pca_vsd <- function(vsd, var, pal = NULL, dir = 1) {
 #'
 #' @param vsd A vsd object
 #' @param var A string - the name of the variable matching metadata columns
-#' @param pal A string - palette name of \code{RColorBrewer}. Default value is \code{NULL},taking the palettes set up in \code{xmc_constants()}.
+#' @param pal A string - palette name of \code{RColorBrewer}. Default value takes the palette set up in \code{xmc_constants()}.
 #' @param dir An integer - \code{0} or \code{1}, to adjust the direction of colors. Default value is \code{1}.
 #'
 #' @importFrom RColorBrewer brewer.pal
@@ -69,9 +69,10 @@ plot_pca_vsd <- function(vsd, var, pal = NULL, dir = 1) {
 #'
 #' @export
 
-plot_heatmap_vsd <- function(vsd, var, pal = NULL, dir = 1) {
-
-    if (is.null(pal)) pal <- xmc_constants()$palette[2]
+plot_heatmap_vsd <- function(vsd,
+                             var,
+                             pal = xmc_constants()$palette[2],
+                             dir = 1) {
 
     sampleDistMatrix <- as.matrix(dist(t(SummarizedExperiment::assay(vsd))))
 
@@ -200,14 +201,17 @@ plot_deseq_volcano <- function(res,
 #'
 #' @param dds A DESeqDataSet object
 #' @param genes A string vector - list of genes
-#' @param pal A string - palette name of \code{RColorBrewer}
+#' @param pal A string - palette name of \code{RColorBrewer}. Default value takes the palettes set up in \code{xmc_constants()}.
 #' @param dir An integer - \code{1} or \code{-1}, to adjust the direction of colors.
 #'
 #' @return A heatmap
 #'
 #' @export
 
-plot_sample_gene_mtx <- function(dds, genes, pal, dir) {
+plot_sample_gene_mtx <- function(dds,
+                                 genes,
+                                 pal = xmc_constants()$palette[3],
+                                 dir = 1) {
 
     mtx <- get_mtx_dds(dds, genes) %>% mtx_rescale()
 
@@ -221,7 +225,11 @@ plot_sample_gene_mtx <- function(dds, genes, pal, dir) {
 
     Heatmap(mtx,
             col = col_fun,
-            rect_gp = gpar(col = "white", lwd = 2))
+            rect_gp = gpar(col = "white", lwd = 2),
+            row_names_gp = gpar(fontsize = 12),
+            column_names_gp = gpar(fontsize = 12),
+            heatmap_legend_param = list(title = "Expression",
+                                        border = "black"))
 }
 
 # ----------
@@ -370,6 +378,33 @@ cts_to_vsd <- function(counts, metadata) {
     vsd <- DESeq2::vst(dds, blind = FALSE)
 
     return(vsd)
+}
+
+# ----------
+
+#' Get top n genes from DESeq2Results object
+#'
+#' @param res A DESeq2Results object
+#' @param topn An integer - the number of top genes to be selected. Default value is \code{50}.
+#'
+#' @importFrom dplyr pull
+#' @importFrom utils head
+#'
+#' @return A string vector
+#'
+#' @export
+
+get_top_genes <- function(res, topn = 50) {
+
+    genes <- res %>%
+        as.data.frame() %>%
+        rownames_to_column(var = "symbol") %>%
+        as_tibble() %>%
+        arrange(.data$padj) %>%
+        head(topn) %>%
+        pull(.data$symbol)
+
+    return(genes)
 }
 
 # ----------

@@ -4,14 +4,14 @@
 \alias{plot_heatmap_vsd}
 \title{Heatmap from vsd object}
 \usage{
-plot_heatmap_vsd(vsd, var, pal = NULL, dir = 1)
+plot_heatmap_vsd(vsd, var, pal = xmc_constants()$palette[2], dir = 1)
 }
 \arguments{
 \item{vsd}{A vsd object}
 
 \item{var}{A string - the name of the variable matching metadata columns}
 
-\item{pal}{A string - palette name of \code{RColorBrewer}. Default value is \code{NULL},taking the palettes set up in \code{xmc_constants()}.}
+\item{pal}{A string - palette name of \code{RColorBrewer}. Default value takes the palette set up in \code{xmc_constants()}.}
 
 \item{dir}{An integer - \code{0} or \code{1}, to adjust the direction of colors. Default value is \code{1}.}
 }
