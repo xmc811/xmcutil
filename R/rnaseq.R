@@ -350,9 +350,8 @@ plot_deseq_gsea_list <- function(gsea_list, p_co = 0.05, pattern = "HALLMARK_", 
               axis.text.x = element_text(angle = 45, vjust = 0.5))
 }
 
-
 # ----------
-# PART 2 - Helper Functions
+# PART 2 - Pipeline Functions
 # ----------
 
 #' Generate vsd object from counts and metadata
@@ -373,6 +372,49 @@ cts_to_vsd <- function(counts, metadata) {
     vsd <- DESeq2::vst(dds, blind = FALSE)
 
     return(vsd)
+}
+
+# ----------
+
+#' GSEA from DESeq2Results object
+#'
+#' @param res A DESeq2Results object
+#' @param pathways A list - the list of pathway genes. Default value is \code{hmks_hs}.
+#'
+#' @return A tibble
+#'
+#' @export
+
+res_to_gsea <- function(res, pathways = hmks_hs) {
+
+    stat <- res$stat
+    names(stat) <- rownames(res)
+
+    gsea <- fgsea::fgsea(pathways, stat, eps = 0) %>% as_tibble()
+
+    return(gsea)
+}
+
+
+# ----------
+# PART 3 - Helper Functions
+# ----------
+
+#' Add shape column for log2 fold change limit
+#'
+#' @param res A tibble
+#' @param lfc_plot_lim A double - the x-limit of log2 fold change plot
+#'
+#' @return A tibble
+
+res_add_shape <- function(res, lfc_plot_lim) {
+
+    res_new <- res %>%
+        mutate(shape1 = ifelse(.data$log2FoldChange > lfc_plot_lim | .data$log2FoldChange < -lfc_plot_lim, TRUE, FALSE),
+               log2FoldChange = replace(.data$log2FoldChange, .data$log2FoldChange > lfc_plot_lim, lfc_plot_lim),
+               log2FoldChange = replace(.data$log2FoldChange, .data$log2FoldChange < -lfc_plot_lim, -lfc_plot_lim))
+
+    return(res_new)
 }
 
 # ----------
@@ -405,46 +447,6 @@ res_to_tibble <- function(res, p_co, lfc_co) {
 
 # ----------
 
-#' Add shape column for log2 fold change limit
-#'
-#' @param res A tibble
-#' @param lfc_plot_lim A double - the x-limit of log2 fold change plot
-#'
-#' @return A tibble
-
-res_add_shape <- function(res, lfc_plot_lim) {
-
-    res_new <- res %>%
-        mutate(shape1 = ifelse(.data$log2FoldChange > lfc_plot_lim | .data$log2FoldChange < -lfc_plot_lim, TRUE, FALSE),
-               log2FoldChange = replace(.data$log2FoldChange, .data$log2FoldChange > lfc_plot_lim, lfc_plot_lim),
-               log2FoldChange = replace(.data$log2FoldChange, .data$log2FoldChange < -lfc_plot_lim, -lfc_plot_lim))
-
-    return(res_new)
-}
-
-# ----------
-
-#' GSEA from DESeq2Results object
-#'
-#' @param res A DESeq2Results object
-#' @param pathways A list - the list of pathway genes. Default value is \code{hmks_hs}.
-#'
-#' @return A tibble
-#'
-#' @export
-
-res_to_gsea <- function(res, pathways = hmks_hs) {
-
-    stat <- res$stat
-    names(stat) <- rownames(res)
-
-    gsea <- fgsea::fgsea(pathways, stat, eps = 0) %>% as_tibble()
-
-    return(gsea)
-}
-
-# ----------
-
 #' Remove repeated string pattern from the pathway names of GSEA results
 #'
 #' @param gsea A tibble of GSEA results
@@ -469,8 +471,6 @@ gsea_rm_pattern <- function(gsea, pattern = "HALLMARK_") {
 #' @param mtx A matrix - the sample-gene matrix
 #'
 #' @return A matrix
-#'
-#' @export
 
 mtx_rescale <- function(mtx) {
 
@@ -491,8 +491,6 @@ mtx_rescale <- function(mtx) {
 #' @param raw A logical - whether to get raw counts data. Default value is \code{FALSE}.
 #'
 #' @return A matrix
-#'
-#' @export
 
 get_mtx_dds <- function(dds, genes, raw = F) {
 
@@ -517,8 +515,6 @@ get_mtx_dds <- function(dds, genes, raw = F) {
 #' @param var A string - the name of the variable matching metadata columns
 #'
 #' @return A tibble
-#'
-#' @export
 
 get_nm_count_dds <- function(dds, genes, var) {
 

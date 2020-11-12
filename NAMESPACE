@@ -2,10 +2,7 @@
 
 export(cts_to_vsd)
 export(filter_mut_table)
-export(get_mtx_dds)
-export(get_nm_count_dds)
 export(log2ratio_to_segment)
-export(mtx_rescale)
 export(mut_add_column)
 export(num_colors)
 export(plot_deseq_gsea)
