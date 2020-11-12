@@ -384,8 +384,6 @@ cts_to_vsd <- function(counts, metadata) {
 #' @importFrom dplyr filter mutate
 #'
 #' @return A tibble
-#'
-#' @export
 
 res_to_tibble <- function(res, p_co, lfc_co) {
 
@@ -410,8 +408,6 @@ res_to_tibble <- function(res, p_co, lfc_co) {
 #' @param lfc_plot_lim A double - the x-limit of log2 fold change plot
 #'
 #' @return A tibble
-#'
-#' @export
 
 res_add_shape <- function(res, lfc_plot_lim) {
 
