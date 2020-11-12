@@ -10,8 +10,10 @@
 #' @param pal A string - palette name of \code{RColorBrewer}
 #' @param dir An integer - \code{1} or \code{-1}, to adjust the direction of colors.
 #'
-#' @return A ggplot2 plot
 #' @importFrom ggplot2 ggplot geom_point aes scale_color_brewer scale_color_distiller labs theme_bw theme
+#'
+#' @return A ggplot2 plot
+#'
 #' @export
 
 plot_pca_vsd <- function(vsd, var, pal, dir) {
@@ -48,13 +50,14 @@ plot_pca_vsd <- function(vsd, var, pal, dir) {
 #' @param pal A string - palette name of \code{RColorBrewer}
 #' @param dir An integer - \code{0} or \code{1}, to adjust the direction of colors. Default value is \code{1}.
 #'
-#'
-#' @return A heatmap
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom circlize colorRamp2
 #' @importFrom ComplexHeatmap Heatmap
 #' @importFrom stats dist quantile
 #' @importFrom grid gpar
+#'
+#' @return A heatmap
+#'
 #' @export
 
 plot_heatmap_vsd <- function(vsd, var, pal, dir = 1) {
@@ -92,10 +95,12 @@ plot_heatmap_vsd <- function(vsd, var, pal, dir = 1) {
 #' @param lfc_co A double - the cutoff of log2 fold change
 #' @param lfc_plot_lim A double - the y-limit of log2 fold change plot. Default value is \code{5}.
 #'
-#' @return A ggplot2 plot
 #' @importFrom dplyr arrange
 #' @importFrom ggplot2 scale_color_manual scale_shape_manual element_text geom_hline
 #' @importFrom grid unit
+#'
+#' @return A ggplot2 plot
+#'
 #' @export
 
 plot_deseq_ma <- function(res, p_co, lfc_co, lfc_plot_lim = 5) {
@@ -137,6 +142,7 @@ plot_deseq_ma <- function(res, p_co, lfc_co, lfc_plot_lim = 5) {
 #' @param lfc_plot_lim A double - the x-limit of log2 fold change plot. Default value is \code{5}.
 #'
 #' @return A ggplot2 plot
+#'
 #' @export
 
 plot_deseq_volcano <- function(res, p_co, lfc_co,
@@ -216,6 +222,7 @@ plot_sample_gene_mtx <- function(dds, genes, pal, dir) {
 #' @importFrom rlang sym
 #'
 #' @return A heatmap
+#'
 #' @export
 
 plot_gene_boxplot <- function(dds, genes, var, pal) {
@@ -239,10 +246,12 @@ plot_gene_boxplot <- function(dds, genes, var, pal) {
 #' @param gsea A tibble of GSEA results
 #' @param pattern A string - the pattern to remove in the plot. Default value is \code{"HALLMARK_"}.
 #'
-#' @return A ggplot2 plot
 #' @importFrom stringr str_remove
 #' @importFrom stats reorder
 #' @importFrom ggplot2 geom_bar scale_fill_gradient2 coord_flip
+#'
+#' @return A ggplot2 plot
+#'
 #' @export
 
 plot_deseq_gsea <- function(gsea, pattern = "HALLMARK_") {
@@ -277,8 +286,10 @@ plot_deseq_gsea <- function(gsea, pattern = "HALLMARK_") {
 #' @param p_co A double - the cutoff of adjusted p-value
 #' @param pattern A string - the pattern to remove in the plot. Default value is \code{"HALLMARK_"}.
 #'
-#' @return A ggplot2 plot
 #' @importFrom ggplot2 scale_color_gradient2
+#'
+#' @return A ggplot2 plot
+#'
 #' @export
 
 plot_deseq_gsea_list <- function(gsea_list, p_co, pattern = "HALLMARK_") {
@@ -330,6 +341,7 @@ plot_deseq_gsea_list <- function(gsea_list, p_co, pattern = "HALLMARK_") {
 #' @param metadata A metadata - the metadata matrix
 #'
 #' @return A vsd object
+#'
 #' @export
 
 cts_to_vsd <- function(counts, metadata) {
@@ -351,9 +363,11 @@ cts_to_vsd <- function(counts, metadata) {
 #' @param p_co A double - the cutoff of adjusted p-value
 #' @param lfc_co A double - the cutoff of log2 fold change
 #'
-#' @return A tibble
 #' @importFrom tibble rownames_to_column as_tibble
 #' @importFrom dplyr filter mutate
+#'
+#' @return A tibble
+#'
 #' @export
 
 res_to_tibble <- function(res, p_co, lfc_co) {
@@ -379,6 +393,7 @@ res_to_tibble <- function(res, p_co, lfc_co) {
 #' @param pathways A list - the list of pathway genes
 #'
 #' @return A tibble
+#'
 #' @export
 
 res_to_gsea <- function(res, pathways) {
@@ -398,8 +413,10 @@ res_to_gsea <- function(res, pathways) {
 #' @param gsea A tibble of GSEA results
 #' @param pattern A string - the pattern to remove in the plot. Default value is \code{"HALLMARK_"}
 #'
-#' @return A tibble of GSEA results
 #' @importFrom stringr str_remove
+#'
+#' @return A tibble of GSEA results
+#'
 #' @export
 
 gsea_rm_pattern <- function(gsea, pattern = "HALLMARK_") {
@@ -417,6 +434,7 @@ gsea_rm_pattern <- function(gsea, pattern = "HALLMARK_") {
 #' @param mtx A matrix - the sample-gene matrix
 #'
 #' @return A matrix
+#'
 #' @export
 
 mtx_rescale <- function(mtx) {
@@ -438,6 +456,7 @@ mtx_rescale <- function(mtx) {
 #' @param raw A logical - whether to get raw counts data. Default value is \code{FALSE}.
 #'
 #' @return A matrix
+#'
 #' @export
 
 get_mtx_dds <- function(dds, genes, raw = F) {
