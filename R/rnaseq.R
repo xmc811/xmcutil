@@ -8,23 +8,35 @@
 #' @param vsd A vsd object
 #' @param var A string - the name of the variable matching metadata columns
 #' @param pal A string - palette name of \code{RColorBrewer}
+#' @param dir An integer - \code{1} or {-1}, to adjust the direction of colors.
 #'
 #' @return A ggplot2 plot
-#' @importFrom ggplot2 ggplot geom_point aes scale_color_brewer labs theme_bw theme
+#' @importFrom ggplot2 ggplot geom_point aes scale_color_brewer scale_color_distiller labs theme_bw theme
 #' @export
 
-plot_pca_vsd <- function(vsd, var, pal) {
+plot_pca_vsd <- function(vsd, var, pal, dir) {
 
     pca <- DESeq2::plotPCA(vsd, intgroup = var, returnData = TRUE)
 
-    ggplot(pca) +
-        geom_point(aes(x = .data$PC1,
-                       y = .data$PC2,
-                       color = .data$group), size = 2) +
-        scale_color_brewer(palette = pal) +
-        labs(color = var) +
-        theme_bw() +
-        theme(aspect.ratio = 1)
+    if (is.numeric(pca[[var]])) {
+        ggplot(pca) +
+            geom_point(aes(x = .data$PC1,
+                           y = .data$PC2,
+                           color = .data$group), size = 2) +
+            scale_color_distiller(palette = pal) +
+            labs(color = var) +
+            theme_bw() +
+            theme(aspect.ratio = 1)
+    } else {
+        ggplot(pca) +
+            geom_point(aes(x = .data$PC1,
+                           y = .data$PC2,
+                           color = .data$group), size = 2) +
+            scale_color_brewer(palette = pal) +
+            labs(color = var) +
+            theme_bw() +
+            theme(aspect.ratio = 1)
+    }
 }
 
 # ----------

@@ -4,7 +4,7 @@
 \alias{plot_pca_vsd}
 \title{PCA plot from vsd object}
 \usage{
-plot_pca_vsd(vsd, var, pal)
+plot_pca_vsd(vsd, var, pal, dir)
 }
 \arguments{
 \item{vsd}{A vsd object}
@@ -12,6 +12,8 @@ plot_pca_vsd(vsd, var, pal)
 \item{var}{A string - the name of the variable matching metadata columns}
 
 \item{pal}{A string - palette name of \code{RColorBrewer}}
+
+\item{dir}{An integer - \code{1} or {-1}, to adjust the direction of colors.}
 }
 \value{
 A ggplot2 plot
