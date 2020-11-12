@@ -1,4 +1,9 @@
 
+# ----------
+# PART 1 - Plotting Functions
+# ----------
+
+
 #' PCA plot from vsd object
 #'
 #' @param vsd A vsd object
@@ -23,51 +28,7 @@ plot_pca_vsd <- function(vsd, var, pal) {
         theme(aspect.ratio = 1)
 }
 
-#' Generate vsd object from counts and metadata
-#'
-#' @param counts A matrix - the RNA-seq count matrix
-#' @param metadata A metadata - the metadata matrix
-#'
-#' @return A vsd object
-#' @export
-
-cts_to_vsd <- function(counts, metadata) {
-
-    dds <- DESeq2::DESeqDataSetFromMatrix(countData = counts,
-                                          colData = metadata,
-                                          design= ~ 1)
-    dds <- DESeq2::DESeq(dds)
-    vsd <- DESeq2::vst(dds, blind = FALSE)
-
-    return(vsd)
-}
-
-#' Transform DESeq2Results object to tibble
-#'
-#' @param res A DESeq2Results object
-#' @param p_co A double - the cutoff of adjusted p-value
-#' @param lfc_co A double - the cutoff of log2 fold change
-#'
-#' @return A tibble
-#' @importFrom tibble rownames_to_column as_tibble
-#' @importFrom dplyr filter mutate
-#' @export
-
-res_to_tibble <- function(res, p_co, lfc_co) {
-
-    res <- res %>%
-        as.data.frame() %>%
-        rownames_to_column(var = "symbol") %>%
-        as_tibble() %>%
-        filter(!is.na(.data$padj)) %>%
-        mutate(significant = ifelse(.data$padj <= p_co & .data$log2FoldChange >= lfc_co,
-                                    "Up",
-                                    ifelse(.data$padj <= p_co & .data$log2FoldChange <= -lfc_co,
-                                           "Down",
-                                           "Not Sig")))
-    return(res)
-}
-
+# ----------
 
 #' MA plot from DESeq2Results object
 #'
@@ -81,7 +42,6 @@ res_to_tibble <- function(res, p_co, lfc_co) {
 #' @importFrom ggplot2 scale_color_manual scale_shape_manual element_text geom_hline
 #' @importFrom grid unit
 #' @export
-
 
 plot_deseq_ma <- function(res, p_co, lfc_co, lfc_plot_lim = 5) {
 
@@ -111,6 +71,7 @@ plot_deseq_ma <- function(res, p_co, lfc_co, lfc_plot_lim = 5) {
 
 }
 
+# ----------
 
 #' Volcano plot from DESeq2Results object
 #'
@@ -156,25 +117,7 @@ plot_deseq_volcano <- function(res, p_co, lfc_co,
 
 }
 
-
-#' GSEA from DESeq2Results object
-#'
-#' @param res A DESeq2Results object
-#' @param pathways A list - the list of pathway genes
-#'
-#' @return A tibble
-#' @export
-
-res_to_gsea <- function(res, pathways) {
-
-    stat <- res$stat
-    names(stat) <- rownames(res)
-
-    gsea <- fgsea::fgsea(pathways, stat, eps = 0) %>% as_tibble()
-
-    return(gsea)
-}
-
+# ----------
 
 #' Barplot from GSEA results
 #'
@@ -186,7 +129,6 @@ res_to_gsea <- function(res, pathways) {
 #' @importFrom stats reorder
 #' @importFrom ggplot2 geom_bar scale_fill_gradient2 coord_flip
 #' @export
-
 
 plot_deseq_gsea <- function(gsea, pattern = "HALLMARK_") {
 
@@ -212,6 +154,7 @@ plot_deseq_gsea <- function(gsea, pattern = "HALLMARK_") {
               axis.title = element_text(size = 12))
 }
 
+# ----------
 
 #' Dotplot from a list of GSEA results
 #'
@@ -222,7 +165,6 @@ plot_deseq_gsea <- function(gsea, pattern = "HALLMARK_") {
 #' @return A ggplot2 plot
 #' @importFrom ggplot2 scale_color_gradient2
 #' @export
-
 
 plot_deseq_gsea_list <- function(gsea_list, p_co, pattern = "HALLMARK_") {
 
@@ -262,6 +204,80 @@ plot_deseq_gsea_list <- function(gsea_list, p_co, pattern = "HALLMARK_") {
               axis.text.x = element_text(angle = 45, vjust = 0.5))
 }
 
+
+# ----------
+# PART 2 - Helper Functions
+# ----------
+
+#' Generate vsd object from counts and metadata
+#'
+#' @param counts A matrix - the RNA-seq count matrix
+#' @param metadata A metadata - the metadata matrix
+#'
+#' @return A vsd object
+#' @export
+
+cts_to_vsd <- function(counts, metadata) {
+
+    dds <- DESeq2::DESeqDataSetFromMatrix(countData = counts,
+                                          colData = metadata,
+                                          design= ~ 1)
+    dds <- DESeq2::DESeq(dds)
+    vsd <- DESeq2::vst(dds, blind = FALSE)
+
+    return(vsd)
+}
+
+# ----------
+
+#' Transform DESeq2Results object to tibble
+#'
+#' @param res A DESeq2Results object
+#' @param p_co A double - the cutoff of adjusted p-value
+#' @param lfc_co A double - the cutoff of log2 fold change
+#'
+#' @return A tibble
+#' @importFrom tibble rownames_to_column as_tibble
+#' @importFrom dplyr filter mutate
+#' @export
+
+res_to_tibble <- function(res, p_co, lfc_co) {
+
+    res <- res %>%
+        as.data.frame() %>%
+        rownames_to_column(var = "symbol") %>%
+        as_tibble() %>%
+        filter(!is.na(.data$padj)) %>%
+        mutate(significant = ifelse(.data$padj <= p_co & .data$log2FoldChange >= lfc_co,
+                                    "Up",
+                                    ifelse(.data$padj <= p_co & .data$log2FoldChange <= -lfc_co,
+                                           "Down",
+                                           "Not Sig")))
+    return(res)
+}
+
+# ----------
+
+#' GSEA from DESeq2Results object
+#'
+#' @param res A DESeq2Results object
+#' @param pathways A list - the list of pathway genes
+#'
+#' @return A tibble
+#' @export
+
+res_to_gsea <- function(res, pathways) {
+
+    stat <- res$stat
+    names(stat) <- rownames(res)
+
+    gsea <- fgsea::fgsea(pathways, stat, eps = 0) %>% as_tibble()
+
+    return(gsea)
+}
+
+# ----------
+
 #' Remove repeated string pattern from the pathway names of GSEA results
 #'
 #' @param gsea A tibble of GSEA results
@@ -278,5 +294,3 @@ gsea_rm_pattern <- function(gsea, pattern = "HALLMARK_") {
 
     return(gsea_new)
 }
-
-
