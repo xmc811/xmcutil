@@ -123,18 +123,18 @@ plot_deseq_ma <- function(res, p_co = 0.05, lfc_co = 2, lfc_plot_lim = 5) {
     res <- res %>%
         res_to_tibble(p_co, lfc_co)
 
+    xmc_const <- xmc_constants()
+
     res %>%
-        mutate(shape = ifelse(.data$log2FoldChange > lfc_plot_lim | .data$log2FoldChange < -lfc_plot_lim, TRUE, FALSE),
-               log2FoldChange = replace(.data$log2FoldChange, .data$log2FoldChange > lfc_plot_lim, lfc_plot_lim),
-               log2FoldChange = replace(.data$log2FoldChange, .data$log2FoldChange < -lfc_plot_lim, -lfc_plot_lim)) %>%
-        arrange(factor(.data$significant, levels = c("Down","Not Sig","Up"))) %>%
+        res_add_shape(lfc_plot_lim) %>%
+        arrange(factor(.data$significant, levels = xmc_const$deg_levels)) %>%
         ggplot() +
         geom_point(aes(x = log10(.data$baseMean),
                        y = .data$log2FoldChange,
                        color = .data$significant,
-                       shape = .data$shape),
+                       shape = .data$shape1),
                    size = 2) +
-        scale_color_manual(values = xmc_constants()$tricolor) +
+        scale_color_manual(values = xmc_const$tricolor) +
         scale_shape_manual(values = c(16, 17)) +
         theme_bw() +
         labs(y = expression(Log[2]~Fold~Change), x = expression(Log[10]~Mean~Normalized~Count)) +
@@ -151,8 +151,8 @@ plot_deseq_ma <- function(res, p_co = 0.05, lfc_co = 2, lfc_plot_lim = 5) {
 #' Volcano plot from DESeq2Results object
 #'
 #' @param res A DESeq2Results object
-#' @param p_co A double - the cutoff of adjusted p-value
-#' @param lfc_co A double - the cutoff of log2 fold change
+#' @param p_co A double - the cutoff of adjusted p-value. Default values is \code{0.05}.
+#' @param lfc_co A double - the cutoff of log2 fold change. Default values is \code{2}.
 #' @param p_plot_lim A double - the y-limit of -log10 adjusted p-value. Default value is \code{5}.
 #' @param lfc_plot_lim A double - the x-limit of log2 fold change plot. Default value is \code{5}.
 #'
@@ -160,28 +160,30 @@ plot_deseq_ma <- function(res, p_co = 0.05, lfc_co = 2, lfc_plot_lim = 5) {
 #'
 #' @export
 
-plot_deseq_volcano <- function(res, p_co, lfc_co,
+plot_deseq_volcano <- function(res,
+                               p_co = 0.05,
+                               lfc_co = 2,
                                p_plot_lim = 5,
                                lfc_plot_lim = 5) {
 
     res <- res %>%
         res_to_tibble(p_co, lfc_co)
 
+    xmc_const <- xmc_constants()
+
     res %>%
-        mutate(shape1 = ifelse(.data$log2FoldChange > lfc_plot_lim | .data$log2FoldChange < -lfc_plot_lim, TRUE, FALSE),
-               log2FoldChange = replace(.data$log2FoldChange, .data$log2FoldChange > lfc_plot_lim, lfc_plot_lim),
-               log2FoldChange = replace(.data$log2FoldChange, .data$log2FoldChange < -lfc_plot_lim, -lfc_plot_lim)) %>%
+        res_add_shape(lfc_plot_lim) %>%
         mutate(shape2 = ifelse(-log10(.data$padj) > p_plot_lim, TRUE, FALSE),
                padj = ifelse(-log10(.data$padj) > p_plot_lim, 10^(-p_plot_lim), .data$padj),
                shape = .data$shape1 | .data$shape2) %>%
-        arrange(factor(.data$significant, levels = c("Not Sig","Down","Up"))) %>%
+        arrange(factor(.data$significant, levels = xmc_const$deg_levels)) %>%
         ggplot() +
         geom_point(aes(x = .data$log2FoldChange,
                        y = -log10(.data$padj),
                        color = .data$significant,
                        shape = factor(.data$shape)),
                    size = 2) +
-        scale_color_manual(values = xmc_constants()$tricolor) +
+        scale_color_manual(values = xmc_const$tricolor) +
         scale_shape_manual(values = c(16, 17), guide = FALSE) +
         theme_bw() +
         labs(y = expression(-Log[10]~Adjusted~p-value), x = expression(Log[2]~Fold~Change)) +
@@ -398,6 +400,27 @@ res_to_tibble <- function(res, p_co, lfc_co) {
                                            "Down",
                                            "Not Sig")))
     return(res)
+}
+
+# ----------
+
+#' Add shape column for log2 fold change limit
+#'
+#' @param res A tibble
+#' @param lfc_plot_lim A double - the x-limit of log2 fold change plot
+#'
+#' @return A tibble
+#'
+#' @export
+
+res_add_shape <- function(res, lfc_plot_lim) {
+
+    res_new <- res %>%
+        mutate(shape1 = ifelse(.data$log2FoldChange > lfc_plot_lim | .data$log2FoldChange < -lfc_plot_lim, TRUE, FALSE),
+               log2FoldChange = replace(.data$log2FoldChange, .data$log2FoldChange > lfc_plot_lim, lfc_plot_lim),
+               log2FoldChange = replace(.data$log2FoldChange, .data$log2FoldChange < -lfc_plot_lim, -lfc_plot_lim))
+
+    return(res_new)
 }
 
 # ----------
