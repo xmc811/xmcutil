@@ -3,7 +3,6 @@
 # PART 1 - Plotting Functions
 # ----------
 
-
 #' PCA plot from vsd object
 #'
 #' @param vsd A vsd object
@@ -26,6 +25,49 @@ plot_pca_vsd <- function(vsd, var, pal) {
         labs(color = var) +
         theme_bw() +
         theme(aspect.ratio = 1)
+}
+
+# ----------
+
+#' Heatmap from vsd object
+#'
+#' @param vsd A vsd object
+#' @param var A string - the name of the variable matching metadata columns
+#' @param pal A string - palette name of \code{RColorBrewer}
+#' @param dir An integer - 0 or 1, to adjust the direction of colors. Default value is \code{1}.
+#'
+#'
+#' @return A heatmap
+#' @importFrom ComplexHeatmap Heatmap
+#' @importFrom stats dist quantile
+#' @importFrom grid gpar
+#' @export
+
+plot_heatmap_vsd <- function(vsd, var, pal, dir = 1) {
+
+    sampleDistMatrix <- as.matrix(dist(t(SummarizedExperiment::assay(vsd))))
+
+    rownames(sampleDistMatrix) <- vsd[[var]]
+    colnames(sampleDistMatrix) <- vsd[[var]]
+
+    sampleDistMatrix <- log2(sampleDistMatrix + 1)
+
+    num <- num_colors(pal)
+
+    colors <- RColorBrewer::brewer.pal(num, pal)
+
+    if (dir) colors <- rev(colors)
+
+    col_fun <- circlize::colorRamp2(seq(from = quantile(sampleDistMatrix,
+                                                        1/nrow(sampleDistMatrix)),
+                                        to = max(sampleDistMatrix),
+                                        length.out = num), colors)
+
+    Heatmap(sampleDistMatrix,
+            col = col_fun,
+            rect_gp = gpar(col = "white", lwd = 2),
+            heatmap_width = unit(1, "npc"),
+            heatmap_height = unit(1, "npc"))
 }
 
 # ----------

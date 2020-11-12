@@ -13,7 +13,9 @@ License: GPL-3 | file LICENSE
 LazyData: TRUE
 biocViews:
 Imports:
+        circlize,
         CNTools,
+        ComplexHeatmap,
         DESeq2,
         DNAcopy,
         dplyr,
@@ -22,15 +24,18 @@ Imports:
         magrittr,
         plyr,
         purrr,
+        RColorBrewer,
         reshape2,
         rlang,
         stringr,
+        SummarizedExperiment,
         tibble,
         tidyverse
 Collate:
         "data.R"
         "globals.R"
         "constants.R"
+        "helpers.R"
         "cnv.R"
         "mutation.R"
         "rnaseq.R"
