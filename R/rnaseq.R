@@ -80,15 +80,14 @@ plot_heatmap_vsd <- function(vsd, var, pal = NULL, dir = 1) {
 
     sampleDistMatrix <- log2(sampleDistMatrix + 1)
 
-    num <- num_colors(pal)
-    colors <- brewer.pal(num, pal)
+    colors <- get_all_colors(pal)
 
     if (dir) colors <- rev(colors)
 
     col_fun <- colorRamp2(seq(from = quantile(sampleDistMatrix,
                                               1/nrow(sampleDistMatrix)),
                               to = max(sampleDistMatrix),
-                              length.out = num), colors)
+                              length.out = length(colors)), colors)
 
     Heatmap(sampleDistMatrix,
             col = col_fun,
@@ -212,14 +211,13 @@ plot_sample_gene_mtx <- function(dds, genes, pal, dir) {
 
     mtx <- get_mtx_dds(dds, genes) %>% mtx_rescale()
 
-    num <- num_colors(pal)
-    colors <- brewer.pal(num, pal)
+    colors <- get_all_colors(pal)
 
     if (dir) colors <- rev(colors)
 
     col_fun <- colorRamp2(seq(from = -1,
                               to = 1,
-                              length.out = num), colors)
+                              length.out = length(colors)), colors)
 
     Heatmap(mtx,
             col = col_fun,

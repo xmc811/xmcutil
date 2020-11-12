@@ -1,17 +1,14 @@
 
 # General Helper Functions
 
-#' Number of colors in the RColorBrewer palette
+#' Get all colors in an RColorBrewer palette
 #'
 #' @param pal A string - the name of \code{RColorBrewer} palette
 #'
-#' @return An integer
-#' @export
+#' @return An string vector
 
-num_colors <- function(pal) {
+get_all_colors <- function(pal) {
 
-    df <- RColorBrewer::brewer.pal.info
-
-    a <- rownames(df) == pal
-    return(df$maxcolors[a])
+    colors <- suppressWarnings({RColorBrewer::brewer.pal(12, pal)})
+    return(colors)
 }
