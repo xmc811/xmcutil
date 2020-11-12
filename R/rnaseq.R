@@ -99,7 +99,7 @@ plot_deseq_ma <- function(res, p_co, lfc_co, lfc_plot_lim = 5) {
                        color = .data$significant,
                        shape = .data$shape),
                    size = 2) +
-        scale_color_manual(values = c("#1f78b4","#d9d9d9", "#e31a1c")) +
+        scale_color_manual(values = xmc_constants()$tricolor) +
         scale_shape_manual(values = c(16, 17)) +
         theme_bw() +
         labs(y = expression(Log[2]~Fold~Change), x = expression(Log[10]~Mean~Normalized~Count)) +
@@ -144,7 +144,7 @@ plot_deseq_volcano <- function(res, p_co, lfc_co,
                        color = .data$significant,
                        shape = factor(.data$shape)),
                    size = 2) +
-        scale_color_manual(values = c("#1f78b4","#d9d9d9", "#e31a1c")) +
+        scale_color_manual(values = xmc_constants()$tricolor) +
         scale_shape_manual(values = c(16, 17), guide = FALSE) +
         theme_bw() +
         labs(y = expression(-Log[10]~Adjusted~p-value), x = expression(Log[2]~Fold~Change)) +
@@ -190,15 +190,17 @@ res_to_gsea <- function(res, pathways) {
 
 plot_deseq_gsea <- function(gsea, pattern = "HALLMARK_") {
 
+    color_set <- xmc_constants()$tricolor
+
     gsea %>%
         gsea_rm_pattern() %>%
         mutate(color = -log10(.data$padj) * ifelse(.data$padj <= 1, 1, 0) * ifelse(.data$NES > 0, 1, -1)) %>%
         ggplot() +
         geom_bar(aes(x = reorder(.data$pathway, .data$NES),
                      y = .data$NES, fill = .data$color), stat = "identity") +
-        scale_fill_gradient2(high = "#d53e4f",
-                             mid = "#f0f0f0",
-                             low = "#3288bd",
+        scale_fill_gradient2(low = color_set[1],
+                             mid = color_set[2],
+                             high = color_set[3],
                              midpoint = 0) +
         coord_flip() +
         labs(x = "Pathway",
@@ -234,6 +236,8 @@ plot_deseq_gsea_list <- function(gsea_list, p_co, pattern = "HALLMARK_") {
 
     gsea_df <- do.call("rbind", gsea_list_new)
 
+    color_set <- xmc_constants()$tricolor
+
     gsea_df %>%
         mutate(color = -log10(.data$padj) * ifelse(.data$padj <= p_co, 1, 0) * ifelse(.data$NES > 0, 1, -1)) %>%
         filter(.data$color != 0) %>%
@@ -242,9 +246,9 @@ plot_deseq_gsea_list <- function(gsea_list, p_co, pattern = "HALLMARK_") {
                        y = factor(.data$Comparison),
                        size = abs(.data$NES),
                        color = .data$color)) +
-        scale_color_gradient2(high = "#d7301f",
-                              mid = "#f0f0f0",
-                              low = "#0570b0",
+        scale_color_gradient2(low = color_set[1],
+                              mid = color_set[2],
+                              high = color_set[3],
                               midpoint = 0) +
         labs(color = bquote("-log"[10] ~ p-value %*% direction),
              size = "abs(Normalized enrichment score)",
