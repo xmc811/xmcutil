@@ -17,3 +17,15 @@
 
 "geneInfo"
 
+
+#' Hallmark gene lists of homo sapiens
+#'
+#' A list of gene lists
+#'
+#' @format A list
+#'
+#' @examples
+#' hmks_hs[[1]]
+
+"hmks_hs"
+

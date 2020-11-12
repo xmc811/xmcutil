@@ -4,14 +4,21 @@
 \alias{plot_deseq_gsea_list}
 \title{Dotplot from a list of GSEA results}
 \usage{
-plot_deseq_gsea_list(gsea_list, p_co, pattern = "HALLMARK_")
+plot_deseq_gsea_list(
+  gsea_list,
+  p_co = 0.05,
+  pattern = "HALLMARK_",
+  dropNonSig = TRUE
+)
 }
 \arguments{
 \item{gsea_list}{A list of tibble of GSEA results}
 
-\item{p_co}{A double - the cutoff of adjusted p-value}
+\item{p_co}{A double - the cutoff of adjusted p-value. Default value is \code{0.05}.}
 
 \item{pattern}{A string - the pattern to remove in the plot. Default value is \code{"HALLMARK_"}.}
+
+\item{dropNonSig}{A logical - whether to drop non-significant pathways in the plot. Default value is \code{TRUE}.}
 }
 \value{
 A ggplot2 plot

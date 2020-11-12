@@ -300,8 +300,9 @@ plot_deseq_gsea <- function(gsea, pattern = "HALLMARK_") {
 #' Dotplot from a list of GSEA results
 #'
 #' @param gsea_list A list of tibble of GSEA results
-#' @param p_co A double - the cutoff of adjusted p-value
+#' @param p_co A double - the cutoff of adjusted p-value. Default value is \code{0.05}.
 #' @param pattern A string - the pattern to remove in the plot. Default value is \code{"HALLMARK_"}.
+#' @param dropNonSig A logical - whether to drop non-significant pathways in the plot. Default value is \code{TRUE}.
 #'
 #' @importFrom ggplot2 scale_color_gradient2
 #'
@@ -309,7 +310,7 @@ plot_deseq_gsea <- function(gsea, pattern = "HALLMARK_") {
 #'
 #' @export
 
-plot_deseq_gsea_list <- function(gsea_list, p_co, pattern = "HALLMARK_") {
+plot_deseq_gsea_list <- function(gsea_list, p_co = 0.05, pattern = "HALLMARK_", dropNonSig = TRUE) {
 
     gsea_list_new <- list()
 
@@ -323,10 +324,12 @@ plot_deseq_gsea_list <- function(gsea_list, p_co, pattern = "HALLMARK_") {
 
     color_set <- xmc_constants()$tricolor
 
-    gsea_df %>%
-        mutate(color = -log10(.data$padj) * ifelse(.data$padj <= p_co, 1, 0) * ifelse(.data$NES > 0, 1, -1)) %>%
-        filter(.data$color != 0) %>%
-        ggplot() +
+    gsea_df <- gsea_df %>%
+        mutate(color = -log10(.data$padj) * ifelse(.data$padj <= p_co, 1, 0) * ifelse(.data$NES > 0, 1, -1))
+
+    if (dropNonSig) gsea_df <- gsea_df %>% filter(.data$color != 0)
+
+    ggplot(gsea_df) +
         geom_point(aes(x = .data$pathway,
                        y = factor(.data$Comparison),
                        size = abs(.data$NES),
@@ -424,13 +427,13 @@ res_add_shape <- function(res, lfc_plot_lim) {
 #' GSEA from DESeq2Results object
 #'
 #' @param res A DESeq2Results object
-#' @param pathways A list - the list of pathway genes
+#' @param pathways A list - the list of pathway genes. Default value is \code{hmks_hs}.
 #'
 #' @return A tibble
 #'
 #' @export
 
-res_to_gsea <- function(res, pathways) {
+res_to_gsea <- function(res, pathways = hmks_hs) {
 
     stat <- res$stat
     names(stat) <- rownames(res)
@@ -450,8 +453,6 @@ res_to_gsea <- function(res, pathways) {
 #' @importFrom stringr str_remove
 #'
 #' @return A tibble of GSEA results
-#'
-#' @export
 
 gsea_rm_pattern <- function(gsea, pattern = "HALLMARK_") {
 

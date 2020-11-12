@@ -4,12 +4,12 @@
 \alias{res_to_gsea}
 \title{GSEA from DESeq2Results object}
 \usage{
-res_to_gsea(res, pathways)
+res_to_gsea(res, pathways = hmks_hs)
 }
 \arguments{
 \item{res}{A DESeq2Results object}
 
-\item{pathways}{A list - the list of pathway genes}
+\item{pathways}{A list - the list of pathway genes. Default value is \code{hmks_hs}.}
 }
 \value{
 A tibble

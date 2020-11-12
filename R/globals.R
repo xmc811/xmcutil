@@ -1,3 +1,3 @@
 
-utils::globalVariables(c("geneInfo"))
+utils::globalVariables(c("geneInfo","hmks_hs"))
 
