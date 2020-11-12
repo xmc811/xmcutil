@@ -239,7 +239,7 @@ plot_sample_gene_mtx <- function(dds,
 #' @param dds A DESeqDataSet object
 #' @param genes A string vector - list of genes
 #' @param var A string - the name of the variable matching metadata columns
-#' @param pal A string - palette name of \code{RColorBrewer}
+#' @param pal A string - palette name of \code{RColorBrewer}. Default value takes the palettes set up in \code{xmc_constants()}.
 #'
 #' @importFrom ggplot2 facet_wrap geom_boxplot scale_fill_brewer
 #' @importFrom rlang sym
@@ -248,7 +248,10 @@ plot_sample_gene_mtx <- function(dds,
 #'
 #' @export
 
-plot_gene_boxplot <- function(dds, genes, var, pal) {
+plot_gene_boxplot <- function(dds,
+                              genes,
+                              var,
+                              pal = xmc_constants()$palette[1]) {
 
     df <- get_nm_count_dds(dds, genes, var)
 
@@ -258,6 +261,8 @@ plot_gene_boxplot <- function(dds, genes, var, pal) {
                          fill = !!sym(var))) +
         geom_point(aes(x = !!sym(var),
                        y = log10(.data$count))) +
+        labs(y = expression(Log[10]~Count)) +
+        theme_bw() +
         facet_wrap(~symbol) +
         scale_fill_brewer(palette = pal)
 }

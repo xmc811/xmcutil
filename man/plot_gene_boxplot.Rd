@@ -4,7 +4,7 @@
 \alias{plot_gene_boxplot}
 \title{Boxplot from DESeqDataSet object}
 \usage{
-plot_gene_boxplot(dds, genes, var, pal)
+plot_gene_boxplot(dds, genes, var, pal = xmc_constants()$palette[1])
 }
 \arguments{
 \item{dds}{A DESeqDataSet object}
@@ -13,7 +13,7 @@ plot_gene_boxplot(dds, genes, var, pal)
 
 \item{var}{A string - the name of the variable matching metadata columns}
 
-\item{pal}{A string - palette name of \code{RColorBrewer}}
+\item{pal}{A string - palette name of \code{RColorBrewer}. Default value takes the palettes set up in \code{xmc_constants()}.}
 }
 \value{
 A heatmap
