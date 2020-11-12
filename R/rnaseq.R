@@ -106,8 +106,8 @@ plot_heatmap_vsd <- function(vsd, var, pal = NULL, dir = 1) {
 #' MA plot from DESeq2Results object
 #'
 #' @param res A DESeq2Results object
-#' @param p_co A double - the cutoff of adjusted p-value
-#' @param lfc_co A double - the cutoff of log2 fold change
+#' @param p_co A double - the cutoff of adjusted p-value. Default values is \code{0.05}.
+#' @param lfc_co A double - the cutoff of log2 fold change. Default values is \code{2}.
 #' @param lfc_plot_lim A double - the y-limit of log2 fold change plot. Default value is \code{5}.
 #'
 #' @importFrom dplyr arrange
@@ -118,7 +118,7 @@ plot_heatmap_vsd <- function(vsd, var, pal = NULL, dir = 1) {
 #'
 #' @export
 
-plot_deseq_ma <- function(res, p_co, lfc_co, lfc_plot_lim = 5) {
+plot_deseq_ma <- function(res, p_co = 0.05, lfc_co = 2, lfc_plot_lim = 5) {
 
     res <- res %>%
         res_to_tibble(p_co, lfc_co)
@@ -127,7 +127,7 @@ plot_deseq_ma <- function(res, p_co, lfc_co, lfc_plot_lim = 5) {
         mutate(shape = ifelse(.data$log2FoldChange > lfc_plot_lim | .data$log2FoldChange < -lfc_plot_lim, TRUE, FALSE),
                log2FoldChange = replace(.data$log2FoldChange, .data$log2FoldChange > lfc_plot_lim, lfc_plot_lim),
                log2FoldChange = replace(.data$log2FoldChange, .data$log2FoldChange < -lfc_plot_lim, -lfc_plot_lim)) %>%
-        arrange(factor(.data$significant, levels = c("Not Sig","Down","Up"))) %>%
+        arrange(factor(.data$significant, levels = c("Down","Not Sig","Up"))) %>%
         ggplot() +
         geom_point(aes(x = log10(.data$baseMean),
                        y = .data$log2FoldChange,

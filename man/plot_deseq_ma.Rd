@@ -4,14 +4,14 @@
 \alias{plot_deseq_ma}
 \title{MA plot from DESeq2Results object}
 \usage{
-plot_deseq_ma(res, p_co, lfc_co, lfc_plot_lim = 5)
+plot_deseq_ma(res, p_co = 0.05, lfc_co = 2, lfc_plot_lim = 5)
 }
 \arguments{
 \item{res}{A DESeq2Results object}
 
-\item{p_co}{A double - the cutoff of adjusted p-value}
+\item{p_co}{A double - the cutoff of adjusted p-value. Default values is \code{0.05}.}
 
-\item{lfc_co}{A double - the cutoff of log2 fold change}
+\item{lfc_co}{A double - the cutoff of log2 fold change. Default values is \code{2}.}
 
 \item{lfc_plot_lim}{A double - the y-limit of log2 fold change plot. Default value is \code{5}.}
 }
