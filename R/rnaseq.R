@@ -7,7 +7,7 @@
 #'
 #' @param vsd A vsd object
 #' @param var A string - the name of the variable matching metadata columns
-#' @param pal A string - palette name of \code{RColorBrewer}. Default value is \code{NULL} (\code{Set1} for categorical variable and \code{BuPu} for continuous variable).
+#' @param pal A string - palette name of \code{RColorBrewer}. Default value is \code{NULL}, taking the palettes set up in \code{xmc_constants()}.
 #' @param dir An integer - \code{1} or \code{-1}, to adjust the direction of colors. Default value is \code{1}.
 #'
 #' @importFrom ggplot2 ggplot geom_point aes scale_color_brewer scale_color_distiller labs theme_bw theme
@@ -21,10 +21,11 @@ plot_pca_vsd <- function(vsd, var, pal = NULL, dir = 1) {
     pca <- DESeq2::plotPCA(vsd, intgroup = var, returnData = TRUE)
 
     if (is.null(pal)) {
+        pal_set <- xmc_constants()$palette
         if (is.numeric(pca[[var]])) {
-            pal <- "BuPu"
+            pal <- pal_set[2]
         } else {
-            pal <- "Set1"
+            pal <- pal_set[1]
         }
     }
 
@@ -55,7 +56,7 @@ plot_pca_vsd <- function(vsd, var, pal = NULL, dir = 1) {
 #'
 #' @param vsd A vsd object
 #' @param var A string - the name of the variable matching metadata columns
-#' @param pal A string - palette name of \code{RColorBrewer}
+#' @param pal A string - palette name of \code{RColorBrewer}. Default value is \code{NULL},taking the palettes set up in \code{xmc_constants()}.
 #' @param dir An integer - \code{0} or \code{1}, to adjust the direction of colors. Default value is \code{1}.
 #'
 #' @importFrom RColorBrewer brewer.pal
@@ -68,7 +69,9 @@ plot_pca_vsd <- function(vsd, var, pal = NULL, dir = 1) {
 #'
 #' @export
 
-plot_heatmap_vsd <- function(vsd, var, pal, dir = 1) {
+plot_heatmap_vsd <- function(vsd, var, pal = NULL, dir = 1) {
+
+    if (is.null(pal)) pal <- xmc_constants()$palette[2]
 
     sampleDistMatrix <- as.matrix(dist(t(SummarizedExperiment::assay(vsd))))
 
@@ -91,7 +94,11 @@ plot_heatmap_vsd <- function(vsd, var, pal, dir = 1) {
             col = col_fun,
             rect_gp = gpar(col = "white", lwd = 2),
             heatmap_width = unit(1, "npc"),
-            heatmap_height = unit(1, "npc"))
+            heatmap_height = unit(1, "npc"),
+            row_names_gp = gpar(fontsize = 12),
+            column_names_gp = gpar(fontsize = 12),
+            heatmap_legend_param = list(title = "Distance",
+                                        border = "black"))
 }
 
 # ----------
