@@ -13,7 +13,7 @@ plot_heatmap_vsd(vsd, var, pal, dir = 1)
 
 \item{pal}{A string - palette name of \code{RColorBrewer}}
 
-\item{dir}{An integer - 0 or 1, to adjust the direction of colors. Default value is \code{1}.}
+\item{dir}{An integer - \code{0} or \code{1}, to adjust the direction of colors. Default value is \code{1}.}
 }
 \value{
 A heatmap

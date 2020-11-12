@@ -8,7 +8,7 @@
 #' @param vsd A vsd object
 #' @param var A string - the name of the variable matching metadata columns
 #' @param pal A string - palette name of \code{RColorBrewer}
-#' @param dir An integer - \code{1} or {-1}, to adjust the direction of colors.
+#' @param dir An integer - \code{1} or \code{-1}, to adjust the direction of colors.
 #'
 #' @return A ggplot2 plot
 #' @importFrom ggplot2 ggplot geom_point aes scale_color_brewer scale_color_distiller labs theme_bw theme
@@ -46,10 +46,12 @@ plot_pca_vsd <- function(vsd, var, pal, dir) {
 #' @param vsd A vsd object
 #' @param var A string - the name of the variable matching metadata columns
 #' @param pal A string - palette name of \code{RColorBrewer}
-#' @param dir An integer - 0 or 1, to adjust the direction of colors. Default value is \code{1}.
+#' @param dir An integer - \code{0} or \code{1}, to adjust the direction of colors. Default value is \code{1}.
 #'
 #'
 #' @return A heatmap
+#' @importFrom RColorBrewer brewer.pal
+#' @importFrom circlize colorRamp2
 #' @importFrom ComplexHeatmap Heatmap
 #' @importFrom stats dist quantile
 #' @importFrom grid gpar
@@ -65,15 +67,14 @@ plot_heatmap_vsd <- function(vsd, var, pal, dir = 1) {
     sampleDistMatrix <- log2(sampleDistMatrix + 1)
 
     num <- num_colors(pal)
-
-    colors <- RColorBrewer::brewer.pal(num, pal)
+    colors <- brewer.pal(num, pal)
 
     if (dir) colors <- rev(colors)
 
-    col_fun <- circlize::colorRamp2(seq(from = quantile(sampleDistMatrix,
-                                                        1/nrow(sampleDistMatrix)),
-                                        to = max(sampleDistMatrix),
-                                        length.out = num), colors)
+    col_fun <- colorRamp2(seq(from = quantile(sampleDistMatrix,
+                                              1/nrow(sampleDistMatrix)),
+                              to = max(sampleDistMatrix),
+                              length.out = num), colors)
 
     Heatmap(sampleDistMatrix,
             col = col_fun,
@@ -139,8 +140,8 @@ plot_deseq_ma <- function(res, p_co, lfc_co, lfc_plot_lim = 5) {
 #' @export
 
 plot_deseq_volcano <- function(res, p_co, lfc_co,
-                          p_plot_lim = 5,
-                          lfc_plot_lim = 5) {
+                               p_plot_lim = 5,
+                               lfc_plot_lim = 5) {
 
     res <- res %>%
         res_to_tibble(p_co, lfc_co)
@@ -169,6 +170,66 @@ plot_deseq_volcano <- function(res, p_co, lfc_co,
               axis.text = element_text(size = 12),
               axis.title = element_text(size = 14))
 
+}
+
+# ----------
+
+#' Sample-gene matrix heatmap from DESeqDataSet object
+#'
+#' @param dds A DESeqDataSet object
+#' @param genes A string vector - list of genes
+#' @param pal A string - palette name of \code{RColorBrewer}
+#' @param dir An integer - \code{1} or \code{-1}, to adjust the direction of colors.
+#'
+#' @return A heatmap
+#'
+#' @export
+
+plot_sample_gene_mtx <- function(dds, genes, pal, dir) {
+
+    mtx <- get_mtx_dds(dds, genes) %>% mtx_rescale()
+
+    num <- num_colors(pal)
+    colors <- brewer.pal(num, pal)
+
+    if (dir) colors <- rev(colors)
+
+    col_fun <- colorRamp2(seq(from = -1,
+                              to = 1,
+                              length.out = num), colors)
+
+    Heatmap(mtx,
+            col = col_fun,
+            rect_gp = gpar(col = "white", lwd = 2))
+}
+
+# ----------
+
+#' Boxplot from DESeqDataSet object
+#'
+#' @param dds A DESeqDataSet object
+#' @param genes A string vector - list of genes
+#' @param var A string - the name of the variable matching metadata columns
+#' @param pal A string - palette name of \code{RColorBrewer}
+#'
+#' @importFrom ggplot2 facet_wrap geom_boxplot scale_fill_brewer
+#' @importFrom rlang sym
+#'
+#' @return A heatmap
+#' @export
+
+plot_gene_boxplot <- function(dds, genes, var, pal) {
+
+    df <- get_nm_count_dds(dds, genes, var)
+
+    ggplot(df) +
+        geom_boxplot(aes(x = !!sym(var),
+                         y = log10(.data$count),
+                         fill = !!sym(var))) +
+        geom_point(aes(x = !!sym(var),
+                       y = log10(.data$count))) +
+        facet_wrap(~symbol) +
+        scale_fill_brewer(palette = pal)
 }
 
 # ----------
@@ -348,3 +409,87 @@ gsea_rm_pattern <- function(gsea, pattern = "HALLMARK_") {
 
     return(gsea_new)
 }
+
+# ----------
+
+#' Rescale RNA-seq sample-gene matrix
+#'
+#' @param mtx A matrix - the sample-gene matrix
+#'
+#' @return A matrix
+#' @export
+
+mtx_rescale <- function(mtx) {
+
+    mtx2 <- mtx
+
+    for (i in seq_along(1:nrow(mtx))) {
+        mtx2[i,] <- (mtx[i,] - min(mtx[i,]))/(max(mtx[i,]) - min(mtx[i,])) * 2 - 1
+    }
+    return(mtx2)
+}
+
+# ----------
+
+#' Get sample-gene matrix from DESeqDataSet object
+#'
+#' @param dds A DESeqDataSet object
+#' @param genes A string vector - list of genes
+#' @param raw A logical - whether to get raw counts data. Default value is \code{FALSE}.
+#'
+#' @return A matrix
+#' @export
+
+get_mtx_dds <- function(dds, genes, raw = F) {
+
+    if (raw) {
+        vsd <- DESeq2::counts(dds)
+    } else {
+        vsd <- DESeq2::vst(dds, blind = FALSE)
+        vsd <- as.matrix(vsd@assays@data[[1]])
+    }
+
+    mtx <- vsd[genes,,drop = FALSE]
+
+    return(mtx)
+}
+
+# ----------
+
+#' Get sample-gene matrix from DESeqDataSet object
+#'
+#' @param dds A DESeqDataSet object
+#' @param genes A string vector - list of genes
+#' @param var A string - the name of the variable matching metadata columns
+#'
+#' @return A tibble
+#'
+#' @export
+
+get_nm_count_dds <- function(dds, genes, var) {
+
+    df_list <- list()
+
+    genes <- genes[genes %in% rownames(dds)]
+
+    for (i in seq_along(1:length(genes))) {
+
+        d <- DESeq2::plotCounts(dds,
+                                gene = genes[i],
+                                intgroup = var,
+                                returnData = TRUE)
+
+        d <- d %>%
+            rownames_to_column() %>%
+            as_tibble() %>%
+            mutate(symbol = genes[i])
+
+        df_list[[i]] <- d
+    }
+
+    df <- do.call("rbind", df_list)
+
+    return(df)
+}
+
+
