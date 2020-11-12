@@ -4,16 +4,16 @@
 \alias{plot_pca_vsd}
 \title{PCA plot from vsd object}
 \usage{
-plot_pca_vsd(vsd, var, pal, dir)
+plot_pca_vsd(vsd, var, pal = NULL, dir = 1)
 }
 \arguments{
 \item{vsd}{A vsd object}
 
 \item{var}{A string - the name of the variable matching metadata columns}
 
-\item{pal}{A string - palette name of \code{RColorBrewer}}
+\item{pal}{A string - palette name of \code{RColorBrewer}. Default value is \code{NULL} (\code{Set1} for categorical variable and \code{BuPu} for continuous variable).}
 
-\item{dir}{An integer - \code{1} or \code{-1}, to adjust the direction of colors.}
+\item{dir}{An integer - \code{1} or \code{-1}, to adjust the direction of colors. Default value is \code{1}.}
 }
 \value{
 A ggplot2 plot

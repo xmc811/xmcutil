@@ -7,8 +7,8 @@
 #'
 #' @param vsd A vsd object
 #' @param var A string - the name of the variable matching metadata columns
-#' @param pal A string - palette name of \code{RColorBrewer}
-#' @param dir An integer - \code{1} or \code{-1}, to adjust the direction of colors.
+#' @param pal A string - palette name of \code{RColorBrewer}. Default value is \code{NULL} (\code{Set1} for categorical variable and \code{BuPu} for continuous variable).
+#' @param dir An integer - \code{1} or \code{-1}, to adjust the direction of colors. Default value is \code{1}.
 #'
 #' @importFrom ggplot2 ggplot geom_point aes scale_color_brewer scale_color_distiller labs theme_bw theme
 #'
@@ -16,16 +16,24 @@
 #'
 #' @export
 
-plot_pca_vsd <- function(vsd, var, pal, dir) {
+plot_pca_vsd <- function(vsd, var, pal = NULL, dir = 1) {
 
     pca <- DESeq2::plotPCA(vsd, intgroup = var, returnData = TRUE)
+
+    if (is.null(pal)) {
+        if (is.numeric(pca[[var]])) {
+            pal <- "BuPu"
+        } else {
+            pal <- "Set1"
+        }
+    }
 
     if (is.numeric(pca[[var]])) {
         ggplot(pca) +
             geom_point(aes(x = .data$PC1,
                            y = .data$PC2,
                            color = .data$group), size = 2) +
-            scale_color_distiller(palette = pal) +
+            scale_color_distiller(palette = pal, direction = dir) +
             labs(color = var) +
             theme_bw() +
             theme(aspect.ratio = 1)
