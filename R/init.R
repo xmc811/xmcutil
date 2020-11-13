@@ -26,4 +26,16 @@ xmc_constants <- function() {
 
 }
 
+#' Reset package options to default
+#'
+#' @export
 
+reset_xmcutil_opts <- function() {
+
+    opts <- xmc_constants()
+
+    options(xmcutil.tricolor = opts$tricolor)
+    options(xmcutil.tripalette = opts$tripalette)
+    options(xmcutil.deg_levels = opts$deg_levels)
+
+}
