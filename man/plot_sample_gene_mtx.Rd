@@ -4,14 +4,19 @@
 \alias{plot_sample_gene_mtx}
 \title{Sample-gene matrix heatmap from DESeqDataSet object}
 \usage{
-plot_sample_gene_mtx(dds, genes, pal = xmc_constants()$palette[3], dir = 1)
+plot_sample_gene_mtx(
+  dds,
+  genes,
+  pal = options("xmcutil.tripalette")[[1]][3],
+  dir = 1
+)
 }
 \arguments{
 \item{dds}{A DESeqDataSet object}
 
 \item{genes}{A string vector - list of genes}
 
-\item{pal}{A string - palette name of \code{RColorBrewer}. Default value takes the palettes set up in \code{xmc_constants()}.}
+\item{pal}{A string - palette name of \code{RColorBrewer}. Default value takes the palettes set up in \code{options('xmc.tripalette')}.}
 
 \item{dir}{An integer - \code{1} or \code{-1}, to adjust the direction of colors.}
 }

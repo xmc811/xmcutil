@@ -7,7 +7,7 @@
 #'
 #' @param vsd A vsd object
 #' @param var A string - the name of the variable matching metadata columns
-#' @param pal A string - palette name of \code{RColorBrewer}. Default value is \code{NULL}, taking the palettes set up in \code{xmc_constants()}.
+#' @param pal A string - palette name of \code{RColorBrewer}. Default value is \code{NULL}, taking the palettes set up in \code{options('xmc.tripalette')}.
 #' @param dir An integer - \code{1} or \code{-1}, to adjust the direction of colors. Default value is \code{1}.
 #'
 #' @importFrom ggplot2 ggplot geom_point aes scale_color_brewer scale_color_distiller labs theme_bw theme
@@ -21,7 +21,7 @@ plot_pca_vsd <- function(vsd, var, pal = NULL, dir = 1) {
     pca <- DESeq2::plotPCA(vsd, intgroup = var, returnData = TRUE)
 
     if (is.null(pal)) {
-        pal_set <- xmc_constants()$palette
+        pal_set <- options('xmcutil.tripalette')[[1]]
         if (is.numeric(pca[[var]])) {
             pal <- pal_set[2]
         } else {
@@ -56,7 +56,7 @@ plot_pca_vsd <- function(vsd, var, pal = NULL, dir = 1) {
 #'
 #' @param vsd A vsd object
 #' @param var A string - the name of the variable matching metadata columns
-#' @param pal A string - palette name of \code{RColorBrewer}. Default value takes the palette set up in \code{xmc_constants()}.
+#' @param pal A string - palette name of \code{RColorBrewer}. Default value takes the palette set up in \code{options('xmc.tripalette')}.
 #' @param dir An integer - \code{0} or \code{1}, to adjust the direction of colors. Default value is \code{1}.
 #'
 #' @importFrom RColorBrewer brewer.pal
@@ -71,7 +71,7 @@ plot_pca_vsd <- function(vsd, var, pal = NULL, dir = 1) {
 
 plot_heatmap_vsd <- function(vsd,
                              var,
-                             pal = xmc_constants()$palette[2],
+                             pal = options('xmcutil.tripalette')[[1]][2],
                              dir = 1) {
 
     sampleDistMatrix <- as.matrix(dist(t(SummarizedExperiment::assay(vsd))))
@@ -123,18 +123,16 @@ plot_deseq_ma <- function(res, p_co = 0.05, lfc_co = 2, lfc_plot_lim = 5) {
     res <- res %>%
         res_to_tibble(p_co, lfc_co)
 
-    xmc_const <- xmc_constants()
-
     res %>%
         res_add_shape(lfc_plot_lim) %>%
-        arrange(factor(.data$significant, levels = xmc_const$deg_levels)) %>%
+        arrange(factor(.data$significant, levels = options('xmcutil.deg_levels')[[1]])) %>%
         ggplot() +
         geom_point(aes(x = log10(.data$baseMean),
                        y = .data$log2FoldChange,
                        color = .data$significant,
                        shape = .data$shape1),
                    size = 2) +
-        scale_color_manual(values = xmc_const$tricolor) +
+        scale_color_manual(values = options('xmcutil.tricolor')[[1]]) +
         scale_shape_manual(values = c(16, 17)) +
         theme_bw() +
         labs(y = expression(Log[2]~Fold~Change), x = expression(Log[10]~Mean~Normalized~Count)) +
@@ -169,21 +167,19 @@ plot_deseq_volcano <- function(res,
     res <- res %>%
         res_to_tibble(p_co, lfc_co)
 
-    xmc_const <- xmc_constants()
-
     res %>%
         res_add_shape(lfc_plot_lim) %>%
         mutate(shape2 = ifelse(-log10(.data$padj) > p_plot_lim, TRUE, FALSE),
                padj = ifelse(-log10(.data$padj) > p_plot_lim, 10^(-p_plot_lim), .data$padj),
                shape = .data$shape1 | .data$shape2) %>%
-        arrange(factor(.data$significant, levels = xmc_const$deg_levels)) %>%
+        arrange(factor(.data$significant, levels = options('xmcutil.deg_levels')[[1]])) %>%
         ggplot() +
         geom_point(aes(x = .data$log2FoldChange,
                        y = -log10(.data$padj),
                        color = .data$significant,
                        shape = factor(.data$shape)),
                    size = 2) +
-        scale_color_manual(values = xmc_const$tricolor) +
+        scale_color_manual(values = options('xmcutil.tricolor')[[1]]) +
         scale_shape_manual(values = c(16, 17), guide = FALSE) +
         theme_bw() +
         labs(y = expression(-Log[10]~Adjusted~p-value), x = expression(Log[2]~Fold~Change)) +
@@ -201,7 +197,7 @@ plot_deseq_volcano <- function(res,
 #'
 #' @param dds A DESeqDataSet object
 #' @param genes A string vector - list of genes
-#' @param pal A string - palette name of \code{RColorBrewer}. Default value takes the palettes set up in \code{xmc_constants()}.
+#' @param pal A string - palette name of \code{RColorBrewer}. Default value takes the palettes set up in \code{options('xmc.tripalette')}.
 #' @param dir An integer - \code{1} or \code{-1}, to adjust the direction of colors.
 #'
 #' @return A heatmap
@@ -210,7 +206,7 @@ plot_deseq_volcano <- function(res,
 
 plot_sample_gene_mtx <- function(dds,
                                  genes,
-                                 pal = xmc_constants()$palette[3],
+                                 pal = options('xmcutil.tripalette')[[1]][3],
                                  dir = 1) {
 
     mtx <- get_mtx_dds(dds, genes) %>% mtx_rescale()
@@ -239,7 +235,7 @@ plot_sample_gene_mtx <- function(dds,
 #' @param dds A DESeqDataSet object
 #' @param genes A string vector - list of genes
 #' @param var A string - the name of the variable matching metadata columns
-#' @param pal A string - palette name of \code{RColorBrewer}. Default value takes the palettes set up in \code{xmc_constants()}.
+#' @param pal A string - palette name of \code{RColorBrewer}. Default value takes the palettes set up in \code{options('xmc.tripalette')}.
 #'
 #' @importFrom ggplot2 facet_wrap geom_boxplot scale_fill_brewer
 #' @importFrom rlang sym
@@ -251,7 +247,7 @@ plot_sample_gene_mtx <- function(dds,
 plot_gene_boxplot <- function(dds,
                               genes,
                               var,
-                              pal = xmc_constants()$palette[1]) {
+                              pal = options("xmcutil.tripalette")[[1]][1]) {
 
     df <- get_nm_count_dds(dds, genes, var)
 
@@ -284,7 +280,7 @@ plot_gene_boxplot <- function(dds,
 
 plot_deseq_gsea <- function(gsea, pattern = "HALLMARK_") {
 
-    color_set <- xmc_constants()$tricolor
+    color_set <- options('xmcutil.tricolor')[[1]]
 
     gsea %>%
         gsea_rm_pattern() %>%
@@ -333,7 +329,7 @@ plot_deseq_gsea_list <- function(gsea_list, p_co = 0.05, pattern = "HALLMARK_", 
 
     gsea_df <- do.call("rbind", gsea_list_new)
 
-    color_set <- xmc_constants()$tricolor
+    color_set <- options('xmcutil.tricolor')[[1]]
 
     gsea_df <- gsea_df %>%
         mutate(color = -log10(.data$padj) * ifelse(.data$padj <= p_co, 1, 0) * ifelse(.data$NES > 0, 1, -1))
