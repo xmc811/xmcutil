@@ -2,7 +2,7 @@
 % Please edit documentation in R/rnaseq.R
 \name{plot_heatmap_vsd}
 \alias{plot_heatmap_vsd}
-\title{Heatmap from vsd object}
+\title{Sample distance heatmap from vsd object}
 \usage{
 plot_heatmap_vsd(
   vsd,
@@ -24,5 +24,5 @@ plot_heatmap_vsd(
 A heatmap
 }
 \description{
-Heatmap from vsd object
+Sample distance heatmap from vsd object
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/rnaseq.R
 \name{get_nm_count_dds}
 \alias{get_nm_count_dds}
-\title{Get sample-gene matrix from DESeqDataSet object}
+\title{Get count data from DESeqDataSet object}
 \usage{
 get_nm_count_dds(dds, genes, var)
 }
@@ -17,5 +17,5 @@ get_nm_count_dds(dds, genes, var)
 A tibble
 }
 \description{
-Get sample-gene matrix from DESeqDataSet object
+Get count data from DESeqDataSet object
 }

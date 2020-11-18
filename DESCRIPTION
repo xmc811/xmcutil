@@ -30,7 +30,7 @@ Imports:
         stringr,
         SummarizedExperiment,
         tibble,
-        tidyverse
+        tidyr
 Collate:
         "data.R"
         "globals.R"

@@ -52,7 +52,7 @@ plot_pca_vsd <- function(vsd, var, pal = NULL, dir = 1) {
 
 # ----------
 
-#' Heatmap from vsd object
+#' Sample distance heatmap from vsd object
 #'
 #' @param vsd A vsd object
 #' @param var A string - the name of the variable matching metadata columns
@@ -361,6 +361,82 @@ plot_deseq_gsea_list <- function(gsea_list, p_co = 0.05, pattern = "HALLMARK_", 
 # PART 2 - Pipeline Functions
 # ----------
 
+#' Generate raw count matrix from HTSeq count files
+#'
+#' @param files A string vector or a dataframe - the file paths or file connections of HTSeq count files
+#'
+#' @importFrom tidyr pivot_wider
+#' @importFrom stringr str_split
+#' @importFrom utils read.table
+#' @importFrom purrr map_chr
+#' @importFrom dplyr select
+#'
+#' @return A matrix
+#'
+#' @export
+
+htseq_to_mtx <- function(files) {
+
+        if (is.character(files)) {
+            file_names <- files
+            file_paths <- files
+        } else {
+            file_names <- files$name
+            file_paths <- files$datapath
+        }
+
+        df_list <- list()
+
+        for (i in 1:length(file_paths)) {
+            df <- read.table(file_paths[i], header = TRUE)
+            df$symbol <- str_split(df$gene_id, pattern = "\\|") %>%
+                map_chr(.f = `[`(1))
+            df <- df %>%
+                filter(.data$symbol != "?") %>%
+                select(.data$symbol, .data$raw_count)
+            df <- df[!duplicated(df$symbol),]
+            df$sample <- basename(file_names)[i]
+            df_list[[i]] <- df
+        }
+
+        a <- do.call("rbind", df_list)
+        a <- a %>%
+            pivot_wider(names_from = .data$sample,
+                        values_from = .data$raw_count)
+        mtx <- as.matrix(a[2:ncol(a)])
+        rownames(mtx) <- a$symbol
+        return(mtx)
+}
+
+# ----------
+
+#' Matching file names with sample names from metadata
+#'
+#' @param mtx A matrix - the raw gene count matrix
+#' @param metadata A dataframe - the metadata
+#' @param sample_col A string - the metadata column with sample names
+#' @param file_col A string - the metadata column with file names
+#' @param cutoff An integer - the cutoff for filtering low-expressed genes. Genes with total counts less than this cutoff will be excluded.
+#'
+#' @return A matrix
+#'
+#' @export
+
+mtx_name_match <- function(mtx, metadata, sample_col, file_col, cutoff) {
+
+    idx <- match(colnames(mtx), metadata[[file_col]])
+
+    mtx <- mtx[,!is.na(idx)]
+    idx <- idx[!is.na(idx)]
+
+    colnames(mtx) <- metadata[[sample_col]][idx]
+
+    mtx <- mtx[rowSums(mtx) >= cutoff,]
+    return(mtx)
+}
+
+# ----------
+
 #' Generate vsd object from counts and metadata
 #'
 #' @param counts A matrix - the RNA-seq count matrix
@@ -542,7 +618,7 @@ get_mtx_dds <- function(dds, genes, raw = F) {
 
 # ----------
 
-#' Get sample-gene matrix from DESeqDataSet object
+#' Get count data from DESeqDataSet object
 #'
 #' @param dds A DESeqDataSet object
 #' @param genes A string vector - list of genes
