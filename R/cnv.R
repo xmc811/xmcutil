@@ -8,13 +8,15 @@
 #' @param return_val A string - if \code{"logic"}, return \code{c(-1,0,1)}-based logical\cr
 #' value; if \code{"num"}, return original numeric value; if anything else, \cr
 #' return \code{c("Loss",NA,"Gain")}-based string. Default value is \code{"logic"}.
+#' @param to_val A vector - the text return value. Default value is \code{c("Gain", NA, "Loss")}.
 #'
 #' @return A numeric vector of the same length with \code{values}
 #' @export
 
 test_cnv <- function(values,
                      cutoff = c(-0.3, 0.3),
-                     return_val = "logic") {
+                     return_val = "logic",
+                     to_val = c("Gain", NA, "Loss")) {
 
     if (cutoff[2] <= cutoff[1]) {
         stop("Cutoff values not accepted")
@@ -34,7 +36,7 @@ test_cnv <- function(values,
         } else {
             test <- plyr::mapvalues(x = test,
                                     from = c(1, 0, -1),
-                                    to = c("Gain", NA, "Loss"))
+                                    to = to_val)
             return(test)
         }
     }
@@ -95,8 +97,8 @@ log2ratio_to_segment <- function(file, sample_name = NULL, pattern = NULL) {
 #' Get CNV status from segmentation data
 #'
 #' @param df A dataframe - segmentation data
-#' @param gene_list A string vector - list of human gene symbols.
-#' @param as_matrix A logical value - if the result table is casted to matrix format. Default value is \code{FALSE}.
+#' @param gene_list A string vector - list of human gene symbols. Default value is \code{NULL}, indicating the whole genome.
+#' @param as_matrix A logical value - if the result table is cast to matrix format. Default value is \code{FALSE}.
 #' @param ... Additional parameters passed to \code{test_cnv()}
 #'
 #' @return A dataframe of CNV status
@@ -106,7 +108,7 @@ log2ratio_to_segment <- function(file, sample_name = NULL, pattern = NULL) {
 #' @export
 
 segment_to_cnv <- function(df,
-                           gene_list,
+                           gene_list = NULL,
                            as_matrix = FALSE,
                            ...) {
 

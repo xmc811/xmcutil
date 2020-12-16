@@ -4,14 +4,14 @@
 \alias{segment_to_cnv}
 \title{Get CNV status from segmentation data}
 \usage{
-segment_to_cnv(df, gene_list, as_matrix = FALSE, ...)
+segment_to_cnv(df, gene_list = NULL, as_matrix = FALSE, ...)
 }
 \arguments{
 \item{df}{A dataframe - segmentation data}
 
-\item{gene_list}{A string vector - list of human gene symbols.}
+\item{gene_list}{A string vector - list of human gene symbols. Default value is \code{NULL}, indicating the whole genome.}
 
-\item{as_matrix}{A logical value - if the result table is casted to matrix format. Default value is \code{FALSE}.}
+\item{as_matrix}{A logical value - if the result table is cast to matrix format. Default value is \code{FALSE}.}
 
 \item{...}{Additional parameters passed to \code{test_cnv()}}
 }
