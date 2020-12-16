@@ -1,9 +1,9 @@
 
 #' Hg19 gene start-end coordinates for CNV analysis
 #'
-#' A dataframe of hg19 gene coordinates
+#' A tibble of hg19 gene coordinates
 #'
-#' @format A dataframe
+#' @format A tibble
 #'
 #' \describe{
 #' \item{chrom}{Chromosome number.}

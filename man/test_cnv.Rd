@@ -13,7 +13,7 @@ test_cnv(values, cutoff = c(-0.3, 0.3), return_val = "logic")
 
 \item{return_val}{A string - if \code{"logic"}, return \code{c(-1,0,1)}-based logical\cr
 value; if \code{"num"}, return original numeric value; if anything else, \cr
-return \code{c("Deletion",NA,"Amplification")}-based string. Default value is \code{"logic"}.}
+return \code{c("Loss",NA,"Gain")}-based string. Default value is \code{"logic"}.}
 }
 \value{
 A numeric vector of the same length with \code{values}

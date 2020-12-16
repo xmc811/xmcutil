@@ -7,7 +7,7 @@
 #' @param cutoff A numeric vector of length 2 - the cutoff for calling amplifications or deletions
 #' @param return_val A string - if \code{"logic"}, return \code{c(-1,0,1)}-based logical\cr
 #' value; if \code{"num"}, return original numeric value; if anything else, \cr
-#' return \code{c("Deletion",NA,"Amplification")}-based string. Default value is \code{"logic"}.
+#' return \code{c("Loss",NA,"Gain")}-based string. Default value is \code{"logic"}.
 #'
 #' @return A numeric vector of the same length with \code{values}
 #' @export
@@ -34,7 +34,7 @@ test_cnv <- function(values,
         } else {
             test <- plyr::mapvalues(x = test,
                                     from = c(1, 0, -1),
-                                    to = c("Amplification", NA, "Deletion"))
+                                    to = c("Gain", NA, "Loss"))
             return(test)
         }
     }
@@ -114,18 +114,18 @@ segment_to_cnv <- function(df,
 
     cnseg <- CNTools::CNSeg(df)
 
-    if (is.null(gene_list)) {
-
-    } else {
+    if (!is.null(gene_list)) {
         gene_info <- geneInfo %>%
             filter(.data$genename %in% gene_list)
+    } else {
+        gene_info <- geneInfo
     }
 
     rdByGene <- CNTools::getRS(cnseg,
                                by = "gene",
                                imput = FALSE,
                                XY = FALSE,
-                               geneMap = gene_info,
+                               geneMap = as.data.frame(gene_info),
                                what = "median")
 
     cnv_res <- rdByGene@rs %>%

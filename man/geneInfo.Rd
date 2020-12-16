@@ -5,7 +5,7 @@
 \alias{geneInfo}
 \title{Hg19 gene start-end coordinates for CNV analysis}
 \format{
-A dataframe
+A tibble
 
 \describe{
 \item{chrom}{Chromosome number.}
@@ -19,7 +19,7 @@ A dataframe
 geneInfo
 }
 \description{
-A dataframe of hg19 gene coordinates
+A tibble of hg19 gene coordinates
 }
 \examples{
 head(geneInfo)
